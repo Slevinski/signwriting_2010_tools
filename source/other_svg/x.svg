@@ -1,0 +1,15 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="24" height="23"
+xmlns="http://www.w3.org/2000/svg" version="1.1">
+<metadata>
+Valerie Sutton's ISWA 2010 symbol
+refined by Adam Frost
+refactored by Stephen E Slevinski Jr
+</metadata>
+<g transform="scale(1 0.958)">
+<path id="path2813" d="M 1.40625,0 0,1.40625 22.59375,24 24,22.59375 1.40625,0 z" fill="#000000" />
+<path id="path2822" d="M 22.59375,0 24,1.40625 1.40625,24 0,22.59375 22.59375,0 z" fill="#000000" />
+</g>
+</svg>
