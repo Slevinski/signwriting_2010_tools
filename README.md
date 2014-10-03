@@ -2,7 +2,7 @@ The SignWriting 2010 Tools
 =====================
 - - - 
 > Version 1.0  
-October 2nd, 2014
+October 3rd, 2014
 
 The SignWriting 2010 Tools are used to build a typeface for written sign languages
 called the [SignWriting 2010 Fonts][29].
@@ -44,14 +44,59 @@ To be published in [Unicode 8][21] in [2015][22].
 ###tools directory
 To build individual font files, use the Python script `build.py`.   Use "-h" for help
 
-    cd tools
-    python build.py -h
+    > cd tools
+    > python build.py -h
+
+    usage: build.py [-h] [-c filename] [-f] [-g filename] [-i version]
+                    [-l [filename]] [-m] [-n {1,4,5}] [-p] [-q] [-s] [-t name]
+                    [-v]
+                    [{Unified,Line,Filling}]
+
+    Automated creation of the SignWriting 2010 TTF files from SVG
+
+    positional arguments:
+      {Unified,Line,Filling}
+                            name of the subfont
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -c filename, --custom filename
+                          name of font customization file, default of custom.txt
+      -f, --force           overwrite existing font files
+      -g filename, --glyph filename
+                          name of glyph customization file, default of glyph.txt
+      -i version, --iswa version
+                            version of the ISWA 2010, default of 1.10.1
+      -l [filename], --log [filename]
+                            write to log file, default of log.txt
+      -m, --mono            use viewboxed glyphs for mono size symbols
+      -n {1,4,5}, --number {1,4,5}
+                            number of svg directory, default of 1
+      -p, --preview         perform all of the actions but generating the TTF
+                            output
+      -q, --quick           skip creation of glyphs, characters, and feature
+                            file merge
+      -s, --silent          eliminates the print output
+      -t name, --title name
+                            prefix for the various font names and files, default
+                            of SignWriting 2010
+      -v, --verbose         increase output verbosity
+
 
 To build all of the release font files, use the shell script `release.sh`.
 
-    cd tools
-    chmod a+x release.sh
-    ./release.sh
+    > cd tools
+    > more release.sh
+    
+    python build.py Unified -v -l "../fonts/SignWriting 2010 Unified.log"
+    python build.py Line -v -l "../fonts/SignWriting 2010 Line.log"
+    python build.py Filling -v -l "../fonts/SignWriting 2010 Filling.log"
+    python build.py Unified -vm -l "../fonts/SignWriting 2010 Mono Unified.log"
+    python build.py Line -vm -l "../fonts/SignWriting 2010 Mono Line.log"
+    python build.py Filling -vm -l "../fonts/SignWriting 2010 Mono Filling.log"    
+
+    > chmod a+x release.sh
+    > ./release.sh
 
 - - - 
 
@@ -75,7 +120,7 @@ The text file `custom.txt` contains a list of custom settings for the entire fon
 
 - - -
 
-The text file `glyph.txt` contains a list of glyph settings to appy to each char.
+The text file `glyph.txt` contains a list of glyph settings to apply to each char.
 
     left_side_bearing=5
     right_side_bearing=5
@@ -138,6 +183,7 @@ To Do
 
 Version History
 ------------------
+* 1.0 - Oct 3rd, 2014: added to readme for tools directory
 * 1.0 - Oct 2nd, 2014: Initial project able to build TrueType font by importing SVG files and merging OpenType features
 
 [1]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010%20Filling.ttf
