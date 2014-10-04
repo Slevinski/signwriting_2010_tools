@@ -39,7 +39,7 @@ start = time.time()
 # Argument Setup
 ##################
 parser = argparse.ArgumentParser(description="Automated creation of the SignWriting 2010 TTF files from SVG"
-	,epilog="Visit http://signpuddle.net/iswa for the ISWA 2010 Font Reference")
+	,epilog="Source SVG and completed TTF available online\nhttps://github.com/slevinski/signwriting_2010_fonts")
 parser.add_argument("subfont",nargs='?',choices=['Unified', 'Line', 'Filling'], help="name of the subfont")
 parser.add_argument("-c","--custom", metavar="filename", default="custom.txt", help="name of font customization file, default of %(default)s")
 parser.add_argument("-f","--force", help="overwrite existing font files", action="store_true")

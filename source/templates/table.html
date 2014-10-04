@@ -1,0 +1,14 @@
+<h1>{{title}}</h1>
+<table border=1>
+	<tr>
+		<th>Symbol Key</th><th>PNG</th><th>SVG</th>{{#fonts}}<th>{{font}}</th>{{/fonts}}
+	</tr>
+	{{#rows}}
+	<tr>
+		<td>{{key}}</td>
+		<td><img src="{{image}}/glyph.php?key={{key}}&size={{size}}"></td>
+		<td><img src="{{asset}}/api/symbol/{{size}}/{{key}}"></td>
+		{{#fonts}}<td><span class="{{abbr}}">{{text}}</span></td>{{/fonts}}
+	</tr>
+	{{/rows}}
+</table>

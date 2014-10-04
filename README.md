@@ -1,8 +1,8 @@
 The SignWriting 2010 Tools
 =====================
 - - - 
-> Version 1.0  
-October 3rd, 2014
+> Version 1.1  
+October 4th, 2014
 
 The SignWriting 2010 Tools are used to build a typeface for written sign languages
 called the [SignWriting 2010 Fonts][29].
@@ -11,7 +11,10 @@ Developers
 ----------
 To build the fonts from the sources, you need [FontForge][45] with [Python scripting][46] support.
 
-To control the different aspect of the automated font creation, customize the files in the `source`  directory and the `tools` directory.  Newly created fonts are written to the `fonts` directory.
+To control the different aspect of the automated font creation, customize the files in the `source`  directory and the `tools` directory.
+Newly created fonts are written to the `fonts` directory.
+
+To create the demo pages, you need pystache for templating.  Demo pages are written to the `demo` directory.
 
 - - -
 
@@ -39,10 +42,14 @@ To be published in [Unicode 8][21] in [2015][22].
 [S10000..S38b07][44]; ISWA 2010 Symbol Keys  
 [Symbol keys][19] used as glyph names in the font files.
 
+#### template directory
+The `templates` directory is used to organize the template input for the creation of the demo pages.
+The templates are HTML with Mustache syntax.
+
 - - -
 
 ###tools directory
-To build individual font files, use the Python script `build.py`.   Use "-h" for help
+To build individual font files, use the Python script `build.py`.   Use "-h" for help.
 
     > cd tools
     > python build.py -h
@@ -97,6 +104,58 @@ To build all of the release font files, use the shell script `release.sh`.
 
     > chmod a+x release.sh
     > ./release.sh
+
+To create the demo pages, use the Python script `demo.py`.  Use "-h" for help.
+
+    > cd tools
+    > python demo.py -h
+
+    usage: demo.py [-h] [-d name] [-u | -p | -k] [-a server] [-w] [-i server]
+                   [-s multiplier] [-t name]
+                   [{,Unified,Line,Filling,Mono,Mono Unified,Mono Line,Mono Filling} [{,Unified,Line,Filling,Mono,Mono Unified,Mono Line,Mono Filling} ...]]
+    
+    Automated creation of the SignWriting 2010 font demo pages
+    
+    positional arguments:
+      {,Unified,Line,Filling,Mono,Mono Unified,Mono Line,Mono Filling}
+                            name of the subfont
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -d name, --dir name   name of subdirectory to write demo files
+      -u, --uni             use Unicode 8 for demo pages
+      -p, --pua             use Unicode Private Use Area for demo pages
+      -k, --key             use symbol keys for demo pages
+      -a server, --asset server
+                            url of SignWriting Asset Provider for SVG, default of
+                            http://signbank.org/swap
+      -w, --with            include PNG column in comparison table
+      -i server, --image server
+                            url of SignWriting Icon Server for PNG, default of
+                            http://signbank.org/swis
+      -s multiplier, --size multiplier
+                            set the relative size of the glyph, default of 5
+      -t name, --title name
+                            title for the HTML demo pages, default of SignWriting
+                            2010 Demo Pages
+
+To build the current demo pages used for development, use the shell script `demo.sh`.
+
+    > cd tools
+    > more demo.sh
+    
+    python demo.py Unified Line -w -u -d "unicode8"
+    python demo.py Unified Line -w -p -d "unicodepua"
+    python demo.py Unified Line -w -k -d "symbolkey"
+
+    > chmod a+x demo.sh
+    > ./demo.sh
+
+There are 3 types of demo pages available online.
+
+* Unicode 8 demo pages: [view online][47] or [download][48]
+* Unicode Private Use Area demo pages: [view online][49] or [download][50]
+* Symbol Key demo pages: [view online][51] or [download][52]
 
 - - - 
 
@@ -174,7 +233,6 @@ This is a work in progress. Feedback, bug reports, and patches are welcomed.
 To Do
 -------
 * Customize the data files and build scripts as required to improve fonts
-* Create demo script that creates test pages for the newly created fonts
 * Create main SignWriting 2010 font file
   * index symbol glyphs in file `svg1ref.txt` as Unified, Line, or Other 
   * create new source SVG called `SVG1 Other Glyphs`
@@ -183,6 +241,7 @@ To Do
 
 Version History
 ------------------
+* 1.1 - Oct 4th, 2014: added script to create demo pages
 * 1.0 - Oct 3rd, 2014: added to readme for tools directory
 * 1.0 - Oct 2nd, 2014: Initial project able to build TrueType font by importing SVG files and merging OpenType features
 
@@ -232,3 +291,9 @@ Version History
 [44]: https://raw.githubusercontent.com/Slevinski/signwriting_2010_tools/master/source/signwriting_2010_symbolkey.fea
 [45]: http://fontforge.org/
 [46]: http://fontforge.org/python.html
+[47]: http://signpuddle.net/iswa/demo/unicode8
+[48]: http://signpuddle.net/iswa/demo/unicode8.zip
+[49]: http://signpuddle.net/iswa/demo/unicodepua
+[50]: http://signpuddle.net/iswa/demo/unicodepua.zip
+[51]: http://signpuddle.net/iswa/demo/symbolkey
+[52]: http://signpuddle.net/iswa/demo/symbolkey.zip
