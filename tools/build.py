@@ -32,26 +32,30 @@ import argparse
 from array import array
 import time
 from stat import * # ST_SIZE etc
+import glob
+
+__version__ = '1.2.0'
 
 start = time.time()
 
 ##################
 # Argument Setup
 ##################
-parser = argparse.ArgumentParser(description="Automated creation of the SignWriting 2010 TTF files from SVG"
-	,epilog="Source SVG and completed TTF available online\nhttps://github.com/slevinski/signwriting_2010_fonts")
-parser.add_argument("subfont",nargs='?',choices=['Unified', 'Line', 'Filling'], help="name of the subfont")
+parser = argparse.ArgumentParser(description="SignWriting 2010 build script for TTF files from SVG (version " + __version__ + ")"
+	,epilog="Source SVG and completed TTF available online https://github.com/slevinski/signwriting_2010_fonts")
+parser.add_argument("subfont",nargs='?',choices=['Unified','Line', 'Filling', 'Shadow'], help="name of the subfont")
 parser.add_argument("-c","--custom", metavar="filename", default="custom.txt", help="name of font customization file, default of %(default)s")
+parser.add_argument("-d","--dir", metavar="directory", help="name of the sub-directory in sources for the subfont files")
+parser.add_argument("-e","--ext", metavar="extension", help="name of the file extension for import, otherwise content sniffing")
 parser.add_argument("-f","--force", help="overwrite existing font files", action="store_true")
 parser.add_argument("-g","--glyph", metavar="filename", default="glyph.txt", help="name of glyph customization file, default of %(default)s")
 parser.add_argument("-i","--iswa", metavar="version", default="1.10.1", help="version of the ISWA 2010, default of %(default)s")
-parser.add_argument("-l","--log", nargs='?',metavar="filename", help="write to log file, default of log.txt", default="NA")
-parser.add_argument("-m","--mono", help="use viewboxed glyphs for mono size symbols", action="store_true")
-parser.add_argument("-n","--number", type=int, default=1, choices=[1, 4, 5], help="number of svg directory, default of %(default)s")
+parser.add_argument("-l","--log", nargs='?',metavar="filename", help="write to log file", default="NA")
+parser.add_argument("-m","--mono", help="helper flag for naming, import, and functions (partial support)", action="store_true")
 parser.add_argument("-p","--preview", help="perform all of the actions but generating the TTF output", action="store_true")
 parser.add_argument("-q","--quick", help="skip creation of glyphs, characters, and feature file merge", action="store_true")
 parser.add_argument("-s","--silent", help="eliminates the print output", action="store_true")
-parser.add_argument("-t","--title", metavar="name", default="SignWriting 2010", help="prefix for the various font names and files, default of %(default)s")
+parser.add_argument("-t","--title", metavar="fontname", default="SignWriting 2010", help="prefix for the various font names and files, default of %(default)s")
 parser.add_argument("-v","--verbose", help="increase output verbosity", action="store_true")
 args = parser.parse_args()
 
@@ -60,6 +64,22 @@ args = parser.parse_args()
 ##################
 sourceDir = "../source/"
 
+if args.mono:
+	underPostfix = "_Mono"
+	fontPostfix = " Mono"
+else:
+	underPostfix = ''
+	fontPostfix = ''
+
+if args.subfont:
+	underPostfix = underPostfix + "_" + args.subfont
+	fontPostfix = fontPostfix + " " + args.subfont
+
+fontTitle = args.title
+underTitle = fontTitle.replace(" ","_");
+fontfilename ="../fonts/" + fontTitle + fontPostfix + ".ttf";
+logfilename ="../fonts/" + fontTitle + fontPostfix + ".log";
+
 if args.silent:
 	if args.verbose:
 		print "devnull"
@@ -67,10 +87,11 @@ if args.silent:
 	sys.stdout = f
 else:
 	if args.log != "NA":
+		
 		#temp = sys.stdout #store original stdout object for later
-		if not args.log:
-			args.log = "log.txt"
-		sys.stdout = open(args.log,'w') #redirect all prints to this log file
+		if args.log:
+			logfilename = args.log
+		sys.stdout = open(logfilename,'w') #redirect all prints to this log file
 
 if args.verbose:
 	for item in sys.argv:
@@ -82,61 +103,51 @@ if args.verbose:
 	print
 	print "SignWriting 2010 Tools project"
 	print "-------------------------------"
+	print "\tversion " + __version__
+	print "-------------------------------"
 	print "https://github.com/slevinski/signwriting_2010_tools"
-	print
+	print 
 	print "verbosity turned on"
 	print
 	if args.mono:
-		print "mono sized with svg viewbox"
+		print "mono sized"
 else:
 	print
 	print "Building font..."
 
-if args.mono:
-	svgDir = "svb"
-	underPostfix = "_Mono"
-	fontPostfix = " Mono"
-else:
-	svgDir = "svg"
-	underPostfix = ''
-	fontPostfix = ''
-
-if args.subfont:
-	underPostfix = underPostfix + "_" + args.subfont
-	fontPostfix = fontPostfix + " " + args.subfont
-	fontDir = sourceDir + svgDir + str(args.number) + args.subfont[0]
+if args.dir:
+	fontDir = sourceDir + args.dir + "/"
 	# check directory
 	if os.path.exists(fontDir):
 		if args.verbose:
-			print "using subfont " + args.subfont + " in " + fontDir
+			print "using directory " + fontDir + " for import files"
 	else:
-		print "FAILURE: subfont " + args.subfont + " does not exist"
-
+		print "FAILURE: directory " + fontDir + " does not exist"
+		sys.exit(-1)
 else:
-	fontDirU = sourceDir + svgDir + str(args.number) + "U"
-	fontDirL = sourceDir + svgDir + str(args.number) + "L"
-	fontDirO = sourceDir + svgDir + str(args.number) + "O"
-	# check directory
-	
-	if os.path.exists(fontDirU):
-		if args.verbose:
-			print "Unified font as " + fontDirU
+	directories = os.walk( os.path.join(sourceDir,'.')).next()[1]
+	directories.remove('other_svg')
+	directories.remove('templates')
+	if not len(directories):
+		print ""
+		print "FAILURE: no directory of import files available in the directory " + sourceDir
 	else:
-		print "FAILURE: Unified font as " + fontDirU + " does not exist"
-	if os.path.exists(fontDirL):
-		if args.verbose:
-			print "Line font as " + fontDirL
-	else:
-		print "FAILURE: Line font as " + fontDirL + " does not exist"
-	if os.path.exists(fontDirO):
-		if args.verbose:
-			print "Other font as " + fontDirO
-	else:
-		print "WARNING: Other font as " + fontDirO + " does not exist"
+		print
+		print "FAILURE: use the -d arguement with one of the following options from the directory " + sourceDir
 
-fontTitle = args.title
-underTitle = fontTitle.replace(" ","_");
-fontfilename ="../fonts/" + fontTitle + fontPostfix + ".ttf";
+		for dir in directories:
+			print "-d " + dir
+
+	sys.exit(-1)
+
+if not args.ext:
+	snif = glob.glob(fontDir + "S10000*")
+	args.ext = snif[0][-3:]
+	print "sniffing directory for extension..."
+
+if args.verbose:
+	print "using extension " + args.ext
+
 if os.path.exists(fontfilename):
 	if args.force:
 		if args.verbose:
@@ -212,6 +223,7 @@ if not args.quick:
 	if args.verbose:
 		print "\tload file symkeys.txt"
 	infile = open("symkeys.txt", "r")
+	missing = 0
 	for symkey in infile:
 		glfTtl = glfTtl + 1
 		glyph_name = symkey[:-1]
@@ -228,16 +240,14 @@ if not args.quick:
 				sys.stdout.flush()
 				glfCnt=0
 
-		char = font.createChar(-1,glyph_name);
+		char = font.createChar(-1,glyph_name)
 
-		# temporary stub
-		if not args.subfont:
-			# determine right directory...
-			fontDir = fontDirU
-
-		filename = fontDir + "/" + glyph_name + ".svg";
+		filename = fontDir + glyph_name + "." + args.ext
 		if os.path.isfile(filename):
-			char.importOutlines(filename);
+			char.importOutlines(filename)
+		else:
+			missing += 1
+
 #		glyph = char.background
 #		glyph.removeOverlap();
 #		char.activeLayer=0
@@ -257,6 +267,12 @@ if not args.quick:
 					getattr(char, line)()
 
 	print "OK"
+	
+	if missing == 37811:
+		print
+		print "FAILURE: no files with extension " + args.ext + " in directory " + fontDir
+		sys.exit(-1)
+	
 	glfEnd = time.time()
 
 	chrStart = time.time()
@@ -378,7 +394,11 @@ if args.verbose:
 	print
 	print "Elapsed time of ", '%.1f'%(elapsed), "seconds."
 	if not args.quick:
-		print "\t" + '%.1f'%(glfEnd-glfStart), "seconds to create " + str(glfTtl) + " glyphs" 
+		print "\t" + '%.1f'%(glfEnd-glfStart), "seconds to create " + str(glfTtl) + " glyphs",
+		if missing:
+			print "minus " + str(missing) + " glyphs not imported"
+		else:
+			print
 		print "\t" + '%.1f'%(chrEnd-chrStart), "seconds to create " + str(uniTtl + puaTtl + chrTtl) + " characters" 
 		print "\t\t" + str(uniTtl) + " Unicode 8 characters"
 		print "\t\t" + str(puaTtl) + " Unicode Private Use Area characters"

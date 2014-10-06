@@ -1,8 +1,8 @@
 The SignWriting 2010 Tools
 =====================
 - - - 
-> Version 1.1  
-October 4th, 2014
+> Version 1.2  
+October 6th, 2014
 
 The SignWriting 2010 Tools are used to build a typeface for written sign languages
 called the [SignWriting 2010 Fonts][29].
@@ -22,11 +22,13 @@ To create the demo pages, you need pystache for templating.  Demo pages are writ
 The `source` directory is used to organize the main input of the build process.  
 
 #### SVG Files
-Scalar Vector Graphic files are converted to TrueType outlines with FontForge scripting.
+The Scalar Vector Graphic files are converted to TrueType outlines with FontForge scripting.  Depending on the quality of the SVG, the lines can be distored and the fill can be chaotic.
+
+An additional sanitization of the SVGs is planned that converts the SVG to PNG with `Inkscape` command lines.  Then the PNG files are converted to SVG with `potrace`.  Then the sanitized SVGs are imported into FontForge.
 
 The source SVG files required to build the fonts are available from the [SignWriting 2010 Fonts][29] project.
 
-The SVGs of the compatibility glyphs for the character set "S1234567890abcdef" are based on [Source Sans Pro][25]
+The SVGs and PNGs of the compatibility glyphs for the character set "S1234567890abcdef" are based on [Source Sans Pro][25]
 written by Paul D. Hunt and licensed under SIL Open Font License.
 These files and more are available in the `other-svg` directory.
 
@@ -53,54 +55,59 @@ To build individual font files, use the Python script `build.py`.   Use "-h" for
 
     > cd tools
     > python build.py -h
-
-    usage: build.py [-h] [-c filename] [-f] [-g filename] [-i version]
-                    [-l [filename]] [-m] [-n {1,4,5}] [-p] [-q] [-s] [-t name]
-                    [-v]
-                    [{Unified,Line,Filling}]
-
-    Automated creation of the SignWriting 2010 TTF files from SVG
-
+    
+    usage: build.py [-h] [-c filename] [-d directory] [-e extension] [-f]
+                    [-g filename] [-i version] [-l [filename]] [-m] [-p] [-q] [-s]
+                    [-t fontname] [-v]
+                    [{Unified,Line,Filling,Shadow}]
+    
+    SignWriting 2010 build script for TTF files from SVG (version 1.2.0)
+    
     positional arguments:
-      {Unified,Line,Filling}
+      {Unified,Line,Filling,Shadow}
                             name of the subfont
-
+    
     optional arguments:
       -h, --help            show this help message and exit
       -c filename, --custom filename
-                          name of font customization file, default of custom.txt
+                            name of font customization file, default of custom.txt
+      -d directory, --dir directory
+                            name of the sub-directory in sources for the subfont
+                            files
+      -e extension, --ext extension
+                            name of the file extension for import, otherwise
+                            content sniffing
       -f, --force           overwrite existing font files
       -g filename, --glyph filename
-                          name of glyph customization file, default of glyph.txt
+                            name of glyph customization file, default of glyph.txt
       -i version, --iswa version
                             version of the ISWA 2010, default of 1.10.1
       -l [filename], --log [filename]
-                            write to log file, default of log.txt
-      -m, --mono            use viewboxed glyphs for mono size symbols
-      -n {1,4,5}, --number {1,4,5}
-                            number of svg directory, default of 1
+                            write to log file
+      -m, --mono            helper flag for naming, import, and functions (partial
+                            support)
       -p, --preview         perform all of the actions but generating the TTF
                             output
-      -q, --quick           skip creation of glyphs, characters, and feature
-                            file merge
+      -q, --quick           skip creation of glyphs, characters, and feature file
+                            merge
       -s, --silent          eliminates the print output
-      -t name, --title name
+      -t fontname, --title fontname
                             prefix for the various font names and files, default
                             of SignWriting 2010
       -v, --verbose         increase output verbosity
-
 
 To build all of the release font files, use the shell script `release.sh`.
 
     > cd tools
     > more release.sh
     
-    python build.py Unified -v -l "../fonts/SignWriting 2010 Unified.log"
-    python build.py Line -v -l "../fonts/SignWriting 2010 Line.log"
-    python build.py Filling -v -l "../fonts/SignWriting 2010 Filling.log"
-    python build.py Unified -vm -l "../fonts/SignWriting 2010 Mono Unified.log"
-    python build.py Line -vm -l "../fonts/SignWriting 2010 Mono Line.log"
-    python build.py Filling -vm -l "../fonts/SignWriting 2010 Mono Filling.log"    
+    #!/bin/sh
+    python build.py Line -d svg1L -v -l
+    python build.py Filling -d svg1F -v -l
+    python build.py Unified -d svg1U -v -l
+    python build.py Line -d svb1L -vm -l
+    python build.py Filling -d svb1F -vm -l
+    python build.py Unified -d svb1U -vm -l
 
     > chmod a+x release.sh
     > ./release.sh
@@ -110,9 +117,9 @@ To create the demo pages, use the Python script `demo.py`.  Use "-h" for help.
     > cd tools
     > python demo.py -h
 
-    usage: demo.py [-h] [-d name] [-u | -p | -k] [-a server] [-w] [-i server]
+    usage: demo.py [-h] [-d directory] [-u | -p | -k] [-a server] [-w] [-i server]
                    [-s multiplier] [-t name]
-                   [{,Unified,Line,Filling,Mono,Mono Unified,Mono Line,Mono Filling} [{,Unified,Line,Filling,Mono,Mono Unified,Mono Line,Mono Filling} ...]]
+                   [{,Unified,Line,Filling,Mono,Mono Unified,Mono Line,Mono Filling} ...]]
     
     Automated creation of the SignWriting 2010 font demo pages
     
@@ -122,14 +129,16 @@ To create the demo pages, use the Python script `demo.py`.  Use "-h" for help.
     
     optional arguments:
       -h, --help            show this help message and exit
-      -d name, --dir name   name of subdirectory to write demo files
+      -d directory, --dir directory
+                            name of subdirectory to write demo files, default of
+                            test
       -u, --uni             use Unicode 8 for demo pages
       -p, --pua             use Unicode Private Use Area for demo pages
       -k, --key             use symbol keys for demo pages
       -a server, --asset server
                             url of SignWriting Asset Provider for SVG, default of
                             http://signbank.org/swap
-      -w, --with            include PNG column in comparison table
+      -w, --withpng         include PNG column in comparison table
       -i server, --image server
                             url of SignWriting Icon Server for PNG, default of
                             http://signbank.org/swis
@@ -138,7 +147,7 @@ To create the demo pages, use the Python script `demo.py`.  Use "-h" for help.
       -t name, --title name
                             title for the HTML demo pages, default of SignWriting
                             2010 Demo Pages
-
+                        
 To build the current demo pages used for development, use the shell script `demo.sh`.
 
     > cd tools
@@ -188,29 +197,6 @@ The text file `glyph.txt` contains a list of glyph settings to apply to each cha
 
 - - -
 
-Text files like `svg#ref.txt` contain a cross reference file from symbol key to subfont, such as Unified, Line, or Other.  The symbol key can be generalized or exact, such as *S100* or *S1000* or *S10000*.  This file is used to create the main SignWriting 2010 font, where some glyphs come from the Unified font, some from the Line font, and others require a new glyph.
-
-    S100 U
-    S101 u
-    S102 Ou
-    S103 L
-    S104 l
-    S105 Ol
-    S1060 U
-    S10610 u
-    ...
-
-Cross Reference for subfont
-
-* U  - Unified subfont
-* u - Unified subfont is imperfect
-* Ou - Other subfont desired, otherwise use the Unified subfont
-* L - Line subfont
-* l - Line subfont is imperfect
-* Ol - Other subfont desired, otherwise use the Line subfont
-
-- - -
-
 
 Reference
 -----------
@@ -241,6 +227,7 @@ To Do
 
 Version History
 ------------------
+* 1.2 - Oct 6th, 2014: refactored build for simplicity, expanded demo for linking and optional PNG
 * 1.1 - Oct 4th, 2014: added script to create demo pages
 * 1.0 - Oct 3rd, 2014: added to readme for tools directory
 * 1.0 - Oct 2nd, 2014: Initial project able to build TrueType font by importing SVG files and merging OpenType features

@@ -1,8 +1,8 @@
 #!/bin/sh
-python build.py Unified -v -l "../fonts/SignWriting 2010 Unified.log"
-python build.py Line -v -l "../fonts/SignWriting 2010 Line.log"
-python build.py Filling -v -l "../fonts/SignWriting 2010 Filling.log"
-python build.py Unified -vm -l "../fonts/SignWriting 2010 Mono Unified.log"
-python build.py Line -vm -l "../fonts/SignWriting 2010 Mono Line.log"
-python build.py Filling -vm -l "../fonts/SignWriting 2010 Mono Filling.log"
+python build.py Line -d svg1L -v -l
+python build.py Filling -d svg1F -v -l
+python build.py Shadow -d svg1U -v -l
+python build.py Line -d svb1L -vm -l
+python build.py Filling -d svb1F -vm -l
+python build.py Shadow -d svb1U -vm -l
 

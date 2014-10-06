@@ -40,13 +40,13 @@ start = time.time()
 parser = argparse.ArgumentParser(description="Automated creation of the SignWriting 2010 font demo pages"
 	,epilog="Source SVG and completed TTF available online\nhttps://github.com/slevinski/signwriting_2010_fonts")
 parser.add_argument("subfont",nargs='*',choices=['','Unified', 'Line', 'Filling', 'Mono','Mono Unified', 'Mono Line', 'Mono Filling'], help="name of the subfont")
-parser.add_argument("-d","--dir", metavar="name", default="test", help="name of subdirectory to write demo files")
+parser.add_argument("-d","--dir", metavar="directory", default="test", help="name of subdirectory to write demo files, default of %(default)s")
 group = parser.add_mutually_exclusive_group()
 group.add_argument("-u","--uni", help="use Unicode 8 for demo pages", action="store_true")
 group.add_argument("-p","--pua", help="use Unicode Private Use Area for demo pages", action="store_true")
 group.add_argument("-k","--key", help="use symbol keys for demo pages", action="store_true")
 parser.add_argument("-a","--asset", metavar="server", default="http://signbank.org/swap", help="url of SignWriting Asset Provider for SVG, default of %(default)s")
-parser.add_argument("-w","--with", help="include PNG column in comparison table", action="store_true")
+parser.add_argument("-w","--withpng", help="include PNG column in comparison table", action="store_true")
 parser.add_argument("-i","--image", metavar="server", default="http://signbank.org/swis", help="url of SignWriting Icon Server for PNG, default of %(default)s")
 parser.add_argument("-s","--size", metavar="multiplier", type=int, default=5, help="set the relative size of the glyph, default of %(default)s")
 parser.add_argument("-t","--title", metavar="name", default="SignWriting 2010 Demo Pages", help="title for the HTML demo pages, default of %(default)s")
@@ -152,7 +152,7 @@ def createDir(dir):
 	else:
 		print "directory already exists"
 		print "remove '" + dir + "' or use -d for a different dir"
-		sys.exit(1);
+#		sys.exit(1);
 		
 
 ##################
@@ -210,6 +210,7 @@ current = ''
 allrows = []
 rows = []
 for symkey in infile:
+	symkey=symkey[:-1]
 	prefix = symkey[0:4]
 	if prefix != current:
 		if len(rows):
@@ -239,6 +240,7 @@ for rows in allrows:
 		"fonts":fonts,
 		"fontsize": args.size*180,
 		"size": args.size,
+		"with": args.withpng,
 		"image": args.image,
 		"asset": args.asset,
 		"navs": navs,
