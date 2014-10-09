@@ -46,7 +46,7 @@ parser = argparse.ArgumentParser(description="SignWriting 2010 build script for 
 parser.add_argument("subfont",nargs='?',choices=['Unified','Line', 'Filling', 'Shadow'], help="name of the subfont")
 parser.add_argument("-c","--custom", metavar="filename", default="custom.txt", help="name of font customization file, default of %(default)s")
 parser.add_argument("-d","--dir", metavar="directory", help="name of the sub-directory in sources for the subfont files")
-parser.add_argument("-e","--ext", metavar="extension", help="name of the file extension for import, otherwise content sniffing")
+parser.add_argument("-e","--ext", metavar="extension", default="svg", help="name of the file extension for import, default of %(default)s")
 parser.add_argument("-f","--force", help="overwrite existing font files", action="store_true")
 parser.add_argument("-g","--glyph", metavar="filename", default="glyph.txt", help="name of glyph customization file, default of %(default)s")
 parser.add_argument("-i","--iswa", metavar="version", default="1.10.1", help="version of the ISWA 2010, default of %(default)s")
@@ -139,11 +139,6 @@ else:
 			print "-d " + dir
 
 	sys.exit(-1)
-
-if not args.ext:
-	snif = glob.glob(fontDir + "S10000*")
-	args.ext = snif[0][-3:]
-	print "sniffing directory for extension..."
 
 if args.verbose:
 	print "using extension " + args.ext
