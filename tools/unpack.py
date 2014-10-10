@@ -34,7 +34,9 @@ parser.add_argument("datafile", nargs="?", help="name of the data file in source
 parser.add_argument("-d","--dir", metavar="directory", help="name of directory in sources for output")
 parser.add_argument("-i","--inverse", help="for SVG, switch black and white paths", action="store_true")
 parser.add_argument("-s","--shadow", help="for SVG, switch all paths to black", action="store_true")
+parser.add_argument("-m","--magnify", metavar="level", type=int, default=1, help="for SVG, magnification level, default of 1")
 parser.add_argument("-v","--viewbox", help="for SVG, include viewBox", action="store_true")
+parser.add_argument("-x","--xml", help="for SVG, adds XML and doctype declaration", action="store_true")
 parser.add_argument("-t","--test", help="write one example to the screen", action="store_true")
 
 args = parser.parse_args()
@@ -75,8 +77,6 @@ for line in lines:
 	w = line[7:9]
 	h = line[11:13]
 	sizes[key] = [w,h]
-#print sizes['S27515'][0]
-#print sizes['S27515'][1]
 
 if os.path.exists(sourceDir + args.datafile):
 	print "input data file " + sourceDir + args.datafile
@@ -101,6 +101,15 @@ for line in lines:
 		file = fontDir + key + "." + ext
 		data = parts[1]
 		if ext=="svg":
+			if not "path" in data:
+				continue
+			if args.xml:
+				svg = '<?xml version="1.0"?>' + "\n"
+				svg += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"' + "\n\t"
+				svg += '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + "\n"
+				svg += '<svg xmlns="http://www.w3.org/2000/svg"'
+			else:
+				svg = '<svg'
 			if 'class="sym-' in data:
 				# source SVG with 2 colors
 				if args.inverse:
@@ -115,8 +124,11 @@ for line in lines:
 			else:
 				if args.inverse:
 					data = data.replace('<path','<path fill="#ffffff"')
+
+			w = int(sizes[key][0]) * int(args.magnify)
+			h = int(sizes[key][1]) * int(args.magnify)
+			svg += ' width="' + str(w) + '" height="' + str(h) + '"'
 			
-			svg = '<svg width="' + sizes[key][0] + '" height="' + sizes[key][1] + '"'
 			if args.viewbox:
 				svg += ' viewBox="0 0 ' + sizes[key][0] + ' ' + sizes[key][1] + '"'
 			svg += '>' + data + "</svg>"
@@ -132,19 +144,7 @@ for line in lines:
 				print "file: " + file
 				print "data: " + data
 				sys.exit()
-			data = base64.b64decode(data)
 			f = open (file,'w')
-			f.write(data)
+			f.write(base64.b64decode(data))
 			f.close
 
-#Class 1: source input 'class="sym-'
-#fill="#ffffff" class="sym-fill"
-#class="sym-line"
-
-#Class 2: auto generated output
-#fill="#000000" stroke="none"
-
-#Class 3: sanitized output
-#no fill info...
-
-#==== Need marge script or unpack with fill.

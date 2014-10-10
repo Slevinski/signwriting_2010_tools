@@ -39,7 +39,7 @@ start = time.time()
 ##################
 parser = argparse.ArgumentParser(description="Automated creation of the SignWriting 2010 font demo pages"
 	,epilog="Source SVG and completed TTF available online\nhttps://github.com/slevinski/signwriting_2010_fonts")
-parser.add_argument("subfont",nargs='*',choices=['','Unified', 'Line', 'Filling', 'Mono','Mono Unified', 'Mono Line', 'Mono Filling'], help="name of the subfont")
+parser.add_argument("subfont",nargs='*',choices=['', 'Filling', 'Mono','Mono Filling'], help="name of the subfont")
 parser.add_argument("-d","--dir", metavar="directory", default="test", help="name of subdirectory to write demo files, default of %(default)s")
 group = parser.add_mutually_exclusive_group()
 group.add_argument("-u","--uni", help="use Unicode 8 for demo pages", action="store_true")

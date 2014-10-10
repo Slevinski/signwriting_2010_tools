@@ -33,8 +33,9 @@ parser = argparse.ArgumentParser(description="SignWriting 2010 packing script ta
 parser.add_argument("directory", nargs="?", help="name of the sub-directory in sources for the subfont files")
 parser.add_argument("-f","--force", help="overwrite existing font files", action="store_true")
 parser.add_argument("-n","--name", metavar="filename", help="name of data file")
-parser.add_argument("-p","--precision", help="number of decimal places for rounding", default="NA")
-parser.add_argument("-s","--simplify", help="remove extra SVG text", action="store_true")
+parser.add_argument("-m","--minimize", metavar="factor", help="for SVG, minimization factor for coordinate space")
+parser.add_argument("-p","--precision", help="for SVG, number of decimal places for rounding", default="NA")
+parser.add_argument("-s","--simplify", help="for SVG, remove extra text", action="store_true")
 parser.add_argument("-t","--test", help="write one example to the screen", action="store_true")
 parser.add_argument("-r","--reserved", default="SignWriting 2010", help="Reserved Font Name, default of %(default)s")
 
@@ -141,6 +142,29 @@ for file in files:
 				glines).replace("." + "0"*int(args.precision),"")
 			if args.simplify:
 				glines = glines.replace(' fill="#000000" stroke="none"',"")
+			if args.minimize:
+				start = glines.index("translate(")
+				end = glines.index(")", start)+1
+				translate =glines[start:end]
+				start = translate.index("(")+1
+				end = translate.index(",", start)
+				transx =int(translate[start:end])/int(args.minimize)
+				start = translate.index(",")+1
+				end = translate.index(")", start)
+				transy =int(translate[start:end])/int(args.minimize)
+				glines = glines.replace(translate,"translate(" + str(transx) + "," + str(transy) + ")")
+
+				start = glines.index("scale(")
+				end = glines.index(")", start)+1
+				scale =glines[start:end]
+				start = scale.index("(")+1
+				end = scale.index(",", start)
+				scalex =float(scale[start:end])/int(args.minimize)
+				start = scale.index(",")+1
+				end = scale.index(")", start)
+				scaley =float(scale[start:end])/int(args.minimize)
+				glines=glines.replace(scale,"scale(" + str(scalex) + "," + str(scaley) + ")")
+				
 			print name + "\t" + glines
 		if args.test:
 			sys.exit()

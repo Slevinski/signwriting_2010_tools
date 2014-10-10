@@ -43,7 +43,7 @@ start = time.time()
 ##################
 parser = argparse.ArgumentParser(description="SignWriting 2010 build script for TTF files from SVG (version " + __version__ + ")"
 	,epilog="Source SVG and completed TTF available online https://github.com/slevinski/signwriting_2010_fonts")
-parser.add_argument("subfont",nargs='?',choices=['Unified','Line', 'Filling', 'Shadow'], help="name of the subfont")
+parser.add_argument("subfont",nargs='?',choices=['', 'Filling', 'Shadow'], help="name of the subfont")
 parser.add_argument("-c","--custom", metavar="filename", default="custom.txt", help="name of font customization file, default of %(default)s")
 parser.add_argument("-d","--dir", metavar="directory", help="name of the sub-directory in sources for the subfont files")
 parser.add_argument("-e","--ext", metavar="extension", default="svg", help="name of the file extension for import, default of %(default)s")

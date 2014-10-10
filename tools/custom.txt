@@ -3,4 +3,4 @@ copyright="SignWriting 2010 is released under the SIL Open Font License, Version
 comment="The SignWriting 2010 font is a typeface for written sign languages which makes the entire International SignWriting Alphabet 2010 symbol set available"
 descent=15
 ascent=15
-em=30
+em=300
