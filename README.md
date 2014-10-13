@@ -1,8 +1,8 @@
 The SignWriting 2010 Tools
 =====================
 - - - 
-> Version 1.2  
-October 6th, 2014
+> Version 1.3  
+October 13th, 2014
 
 The SignWriting 2010 Tools are used to build a typeface for written sign languages
 called the [SignWriting 2010 Fonts][29].
@@ -16,23 +16,35 @@ Newly created fonts are written to the `fonts` directory.
 
 To create the demo pages, you need pystache for templating.  Demo pages are written to the `demo` directory.
 
+To retrace the SVG from the command line, you will need several command line tools: Inkscape, pngtopnm, mkbitmap, and potrace.
+
+To unpack the SVG Line and SVG Fill data files, the `unpack.py` tool can be used.
+
 - - -
 
-### source directory
+Source Directory
+------------------
 The `source` directory is used to organize the main input of the build process.  
 
-#### SVG Files
-The Scalar Vector Graphic files are converted to TrueType outlines with FontForge scripting.  Depending on the quality of the SVG, the lines can be distored and the fill can be chaotic.
+### SVG Files
+The Scalar Vector Graphic files are converted to TrueType outlines with FontForge scripting.  
 
-An additional sanitization of the SVGs is planned that converts the SVG to PNG with `Inkscape` command lines.  Then the PNG files are converted to SVG with `potrace`.  Then the sanitized SVGs are imported into FontForge.
+The source SVG files required to build the fonts are available from the [SignWriting 2010 Fonts][29] project.  These files were created with the SignWriting 2010 Tools by retracing the SVG Refinement using the `retrace.py` script.  To use these files, save them to the `source` directory and unzip.
 
-The source SVG files required to build the fonts are available from the [SignWriting 2010 Fonts][29] project.
+* [SVG Line][55]  
+* [SVG Filling][56]  
 
-The SVGs and PNGs of the compatibility glyphs for the character set "S1234567890abcdef" are based on [Source Sans Pro][25]
+These files can be unpacked with the `unpack.py` script in the `tools` directory.  For the best import results, unpack with magnify level 10.
+
+    > cd tools
+    > python unpack.py svg_line.dat -m 10
+    > python unpack.py svg_fill.dat -m 10
+
+The SVGs of the compatibility glyphs for the character set "S1234567890abcdef" are based on [Source Sans Pro][25]
 written by Paul D. Hunt and licensed under SIL Open Font License.
 These files and more are available in the `other-svg` directory.
 
-#### FEA Files
+### FEA Files
 The [Feature files][41] define the standard ligature substitution for the various character sets. Three different character sets can be used to access the glyphs.
 
 [1D800..1DAAF][42]; Sutton SignWriting  
@@ -44,13 +56,14 @@ To be published in [Unicode 8][21] in [2015][22].
 [S10000..S38b07][44]; ISWA 2010 Symbol Keys  
 [Symbol keys][19] used as glyph names in the font files.
 
-#### template directory
+### template directory
 The `templates` directory is used to organize the template input for the creation of the demo pages.
 The templates are HTML with Mustache syntax.
 
 - - -
 
-###tools directory
+Tools Directory
+-----------------
 To build individual font files, use the Python script `build.py`.   Use "-h" for help.
 
     > cd tools
@@ -59,13 +72,12 @@ To build individual font files, use the Python script `build.py`.   Use "-h" for
     usage: build.py [-h] [-c filename] [-d directory] [-e extension] [-f]
                     [-g filename] [-i version] [-l [filename]] [-m] [-p] [-q] [-s]
                     [-t fontname] [-v]
-                    [{Unified,Line,Filling,Shadow}]
+                    [{,Filling,Shadow}]
     
     SignWriting 2010 build script for TTF files from SVG (version 1.2.0)
     
     positional arguments:
-      {Unified,Line,Filling,Shadow}
-                            name of the subfont
+      {,Filling,Shadow}     name of the subfont
     
     optional arguments:
       -h, --help            show this help message and exit
@@ -75,8 +87,7 @@ To build individual font files, use the Python script `build.py`.   Use "-h" for
                             name of the sub-directory in sources for the subfont
                             files
       -e extension, --ext extension
-                            name of the file extension for import, otherwise
-                            content sniffing
+                            name of the file extension for import, default of svg
       -f, --force           overwrite existing font files
       -g filename, --glyph filename
                             name of glyph customization file, default of glyph.txt
@@ -101,16 +112,13 @@ To build all of the release font files, use the shell script `release.sh`.
     > cd tools
     > more release.sh
     
-    #!/bin/sh
-    python build.py Line -d svg1L -v -l
-    python build.py Filling -d svg1F -v -l
-    python build.py Unified -d svg1U -v -l
-    python build.py Line -d svb1L -vm -l
-    python build.py Filling -d svb1F -vm -l
-    python build.py Unified -d svb1U -vm -l
+    python build.py "" -d svg_line -vf -l
+    python build.py Filling -d svg_fill -vf -l
 
     > chmod a+x release.sh
     > ./release.sh
+
+- - -
 
 To create the demo pages, use the Python script `demo.py`.  Use "-h" for help.
 
@@ -119,12 +127,12 @@ To create the demo pages, use the Python script `demo.py`.  Use "-h" for help.
 
     usage: demo.py [-h] [-d directory] [-u | -p | -k] [-a server] [-w] [-i server]
                    [-s multiplier] [-t name]
-                   [{,Unified,Line,Filling,Mono,Mono Unified,Mono Line,Mono Filling} ...]]
+                  [{,Filling,Mono,Mono Filling} ...]
     
     Automated creation of the SignWriting 2010 font demo pages
     
     positional arguments:
-      {,Unified,Line,Filling,Mono,Mono Unified,Mono Line,Mono Filling}
+      {,Filling,Mono,Mono Filling}
                             name of the subfont
     
     optional arguments:
@@ -147,16 +155,18 @@ To create the demo pages, use the Python script `demo.py`.  Use "-h" for help.
       -t name, --title name
                             title for the HTML demo pages, default of SignWriting
                             2010 Demo Pages
+
+
                         
 To build the current demo pages used for development, use the shell script `demo.sh`.
 
     > cd tools
     > more demo.sh
     
-    python demo.py Unified Line -w -u -d "unicode8"
-    python demo.py Unified Line -w -p -d "unicodepua"
-    python demo.py Unified Line -w -k -d "symbolkey"
-
+    python demo.py "" Filling -w -u -d "unicode8"
+    python demo.py "" Filling -w -p -d "unicodepua"
+    python demo.py "" Filling -w -k -d "symbolkey"
+    
     > chmod a+x demo.sh
     > ./demo.sh
 
@@ -177,22 +187,29 @@ The text file `symkeys.txt` contains a list of the 37,811 symbol keys of the ISW
 
 - - -
 
+The text file `symsize.txt` contains a list of the 37,811 symbol keys with their individual sizes.
+
+    S10000515x530
+    S10001521x530
+    S10002530x515
+    ...
+
+- - -
+
 The text file `custom.txt` contains a list of custom settings for the entire font.
 
     weight="Medium"
     copyright="SignWriting 2010 is released under the SIL Open Font License
     comment="The SignWriting 2010 font is a typeface for written sign languages
-    descent=15
-    ascent=15
-    em=30
+    descent=30
+    ascent=0
+    em=300
 
 - - -
 
 The text file `glyph.txt` contains a list of glyph settings to apply to each char.
 
-    left_side_bearing=5
-    right_side_bearing=5
-    removeOverlap
+    right_side_bearing=0
     autoInstr
 
 - - -
@@ -218,15 +235,11 @@ This is a work in progress. Feedback, bug reports, and patches are welcomed.
 
 To Do
 -------
-* Customize the data files and build scripts as required to improve fonts
-* Create main SignWriting 2010 font file
-  * index symbol glyphs in file `svg1ref.txt` as Unified, Line, or Other 
-  * create new source SVG called `SVG1 Other Glyphs`
-  * update build.py to create main font file
-
+* Create mono fonts for use outside of SVGs
 
 Version History
 ------------------
+* 1.3 - Oct 13th, 2014: production ready fonts
 * 1.2 - Oct 6th, 2014: refactored build for simplicity, expanded demo for linking and optional PNG
 * 1.1 - Oct 4th, 2014: added script to create demo pages
 * 1.0 - Oct 3rd, 2014: added to readme for tools directory
@@ -284,3 +297,9 @@ Version History
 [50]: http://signpuddle.net/iswa/demo/unicodepua.zip
 [51]: http://signpuddle.net/iswa/demo/symbolkey
 [52]: http://signpuddle.net/iswa/demo/symbolkey.zip
+[53]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/source/png_sutton.zip
+[54]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/source/svg_refinement.zip
+[55]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/source/svg_line.zip
+[56]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/source/svg_fill.zip
+[57]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010.ttf
+[58]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010.log

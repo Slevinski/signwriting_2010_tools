@@ -125,13 +125,43 @@ for line in lines:
 				if args.inverse:
 					data = data.replace('<path','<path fill="#ffffff"')
 
-			w = int(sizes[key][0]) * int(args.magnify)
-			h = int(sizes[key][1]) * int(args.magnify)
-			svg += ' width="' + str(w) + '" height="' + str(h) + '"'
-			
 			if args.viewbox:
-				svg += ' viewBox="0 0 ' + sizes[key][0] + ' ' + sizes[key][1] + '"'
-			svg += '>' + data + "</svg>"
+				w = int(sizes[key][0]) * int(args.magnify)
+				h = int(sizes[key][1]) * int(args.magnify)
+				svg += ' width="' + str(w) + '" height="' + str(h) + '"'
+			
+				if args.viewbox:
+					svg += ' viewBox="0 0 ' + sizes[key][0] + ' ' + sizes[key][1] + '"'
+				svg += '>' + data + "</svg>"
+			else:
+				if int(args.magnify) != 1:
+					start = data.index("translate(")
+					end = data.index(")", start)+1
+					translate =data[start:end]
+					start = translate.index("(")+1
+					end = translate.index(",", start)
+					transx =int(translate[start:end])*int(args.magnify)
+					start = translate.index(",")+1
+					end = translate.index(")", start)
+					transy =int(translate[start:end])*int(args.magnify)
+					data = data.replace(translate,"translate(" + str(transx) + "," + str(transy) + ")")
+
+					start = data.index("scale(")
+					end = data.index(")", start)+1
+					scale =data[start:end]
+					start = scale.index("(")+1
+					end = scale.index(",", start)
+					scalex =float(scale[start:end])*int(args.magnify)
+					start = scale.index(",")+1
+					end = scale.index(")", start)
+					scaley =float(scale[start:end])*int(args.magnify)
+					data=data.replace(scale,"scale(" + str(scalex) + "," + str(scaley) + ")")
+					
+				w = int(sizes[key][0]) * int(args.magnify)
+				h = int(sizes[key][1]) * int(args.magnify)
+				svg += ' width="' + str(w) + '" height="' + str(h) + '"'
+				svg += '>' + data + "</svg>"
+
 			if args.test:
 				print "file: " + file
 				print "svg: " + svg

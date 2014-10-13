@@ -1,4 +1,4 @@
-left_side_bearing=5
-right_side_bearing=5
+#left_side_bearing=0
+right_side_bearing=0
 #removeOverlap
 autoInstr
