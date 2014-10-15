@@ -1,4 +1,4 @@
 #!/bin/sh
-python build.py "" -d svg_line -vf -l
-python build.py Filling -d svg_fill -vf -l
+python build.py "" -d svg_line -vfu -l
+python build.py Filling -d svg_fill -vfu -l
 

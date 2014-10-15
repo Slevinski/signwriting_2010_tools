@@ -56,8 +56,23 @@ parser.add_argument("-p","--preview", help="perform all of the actions but gener
 parser.add_argument("-q","--quick", help="skip creation of glyphs, characters, and feature file merge", action="store_true")
 parser.add_argument("-s","--silent", help="eliminates the print output", action="store_true")
 parser.add_argument("-t","--title", metavar="fontname", default="SignWriting 2010", help="prefix for the various font names and files, default of %(default)s")
+parser.add_argument("-u","--unicode", help="use Unicode code points for individual glyphs", action="store_true")
 parser.add_argument("-v","--verbose", help="increase output verbosity", action="store_true")
 args = parser.parse_args()
+
+#################
+# function defs
+#################
+def unichar(uni):
+        code = int(uni,16)
+        try:
+                return unichr(code)
+        except ValueError:
+                return unichr( 0xd800 + ((code-0x10000)//0x400) ) \
+                        +unichr( 0xdc00 + ((code-0x10000)% 0x400) )
+
+def key2code(key):
+	return (int('100000',16) + ((int(key[1:4],16) - 256) * 96) + ((int(key[4:5],16))*16) + int(key[5:6],16) + 1)
 
 ##################
 # # initializing
@@ -108,9 +123,13 @@ if args.verbose:
 	print "https://github.com/slevinski/signwriting_2010_tools"
 	print 
 	print "verbosity turned on"
-	print
 	if args.mono:
+		print
 		print "mono sized"
+	if args.unicode:
+		print
+		print "using Unicode codepoints for glyphs"
+	print
 else:
 	print
 	print "Building font..."
@@ -177,7 +196,7 @@ for line in lines:
 		if (args.verbose):
 			print "\tsetting: " + parts[0] + " as " + parts[1]
 		if parts[1][0]=='"':
-			parts[1] = parts[1].replace('"','').replace('\n',"\n")
+			parts[1] = parts[1].replace('"','').replace('\\n','\n')
 			setattr(font,parts[0],parts[1])
 		else:
 			setattr(font,parts[0],int(parts[1]))
@@ -219,6 +238,7 @@ if not args.quick:
 		print "\tload file symkeys.txt"
 	infile = open("symkeys.txt", "r")
 	missing = 0
+	codepoint = -1
 	for symkey in infile:
 		glfTtl = glfTtl + 1
 		glyph_name = symkey[:-1]
@@ -235,7 +255,9 @@ if not args.quick:
 				sys.stdout.flush()
 				glfCnt=0
 
-		char = font.createChar(-1,glyph_name)
+		if args.unicode:
+			codepoint = key2code(glyph_name)
+		char = font.createChar(codepoint,glyph_name)
 
 		filename = fontDir + glyph_name + "." + args.ext
 		if os.path.isfile(filename):
