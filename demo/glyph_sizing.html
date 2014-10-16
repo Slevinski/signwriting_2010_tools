@@ -17,24 +17,36 @@ var hello = 'M518x529S14c20481x471S27106503x489';
 var world = 'M518x533S1870a489x515S18701482x490S20500508x496S2e734500x468';
 
 function helloWorld(){
-    var report = '<h2>SVG images using TrueType fonts</h2>';
-    report += getSignSvg(hello) + "<br><br>";
-    report += getSignSvg(world);
-    var helloCanvas = getSignCanvas(hello);
-    var helloImage = helloCanvas.toDataURL("image/png");
-    var worldCanvas = getSignCanvas(world);
-    var worldImage = worldCanvas.toDataURL("image/png");
-    report += '<hr>';
-    report += '<h2>HTML 5 Canvas images using TrueType fonts</h2>';
-    report += '<h3>canvas export to PNG images</h3>';
-    report += '<img src="' + helloImage + '"/><br><br>'
-    report += '<img src="' + worldImage + '"/>'
-    report += '<h3>canvas written to document</h3>';
-    document.getElementById("output").innerHTML = report
-    document.getElementById("output").appendChild(getSignCanvas(hello));
-    document.getElementById("output").appendChild(document.createElement("br"));
-    document.getElementById("output").appendChild(document.createElement("br"));
-    document.getElementById("output").appendChild(getSignCanvas(world));
+  if (!getSymSize('S10000')){
+    document.getElementById("output").innerHTML = fontInstall(); 
+    return;
+  }
+  var report = '<h2>SVG images using TrueType fonts</h2>';
+  report += getSignSvg(hello) + "<br><br>";
+  report += getSignSvg(world);
+  var helloCanvas = getSignCanvas(hello);
+  var helloImage = helloCanvas.toDataURL("image/png");
+  var worldCanvas = getSignCanvas(world);
+  var worldImage = worldCanvas.toDataURL("image/png");
+  report += '<hr>';
+  report += '<h2>HTML 5 Canvas images using TrueType fonts</h2>';
+  report += '<h3>canvas export to PNG images</h3>';
+  report += '<img src="' + helloImage + '"/><br><br>'
+  report += '<img src="' + worldImage + '"/>'
+  report += '<h3>canvas written to document</h3>';
+  document.getElementById("output").innerHTML = report
+  document.getElementById("output").appendChild(getSignCanvas(hello));
+  document.getElementById("output").appendChild(document.createElement("br"));
+  document.getElementById("output").appendChild(document.createElement("br"));
+  document.getElementById("output").appendChild(getSignCanvas(world));
+}
+
+function fontInstall(){
+  var report = '<h2>SignWriting 2010 Font not installed!</h2>\n';
+  report += '<p>Please download and install the SignWriting 2010 Fonts:';
+  report += '<ul><li><a href="https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010.ttf">SignWriting 2010</a>';
+  report += '<li><a href="https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010%20Filling.ttf">SignWriting 2010 Filling</a>';
+  return report;
 }
 
 function check(seconds){
@@ -47,10 +59,7 @@ function check(seconds){
     newSize = getSymSize(key);
     
     if(!newSize){
-      report += '<h2>SignWriting 2010 Font not installed!</h2>\n';
-      report += '<p>Please download and install the SignWriting 2010 Fonts:';
-      report += '<ul><li><a href="https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010.ttf">SignWriting 2010</a>';
-      report += '<li><a href="https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010%20Filling.ttf">SignWriting 2010 Filling</a>';
+      report += fontInstall()
       break;
     }
 
