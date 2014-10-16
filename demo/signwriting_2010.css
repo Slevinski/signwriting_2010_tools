@@ -1,0 +1,20 @@
+svg text.sym-line {
+  font-family: "SignWriting 2010";
+  -moz-font-feature-settings: "liga=1";
+  -ms-font-feature-settings: "liga";
+  -webkit-font-feature-settings: "liga";
+  -o-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+  fill: black;
+  font-size: 30px;
+}
+svg text.sym-fill {
+  font-family: "SignWriting 2010 Filling";
+  -moz-font-feature-settings: "liga=1";
+  -ms-font-feature-settings: "liga";
+  -webkit-font-feature-settings: "liga";
+  -o-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+  fill: white;
+  font-size: 30px;
+}
