@@ -49,6 +49,7 @@ parser.add_argument("-d","--dir", metavar="directory", help="name of the sub-dir
 parser.add_argument("-e","--ext", metavar="extension", default="svg", help="name of the file extension for import, default of %(default)s")
 parser.add_argument("-f","--force", help="overwrite existing font files", action="store_true")
 parser.add_argument("-g","--glyph", metavar="filename", default="glyph.txt", help="name of glyph customization file, default of %(default)s")
+parser.add_argument("-k","--keys", metavar="filename", default="symkeys.txt", help="name of symbol key file, default of %(default)s")
 parser.add_argument("-i","--iswa", metavar="version", default="1.10.1", help="version of the ISWA 2010, default of %(default)s")
 parser.add_argument("-l","--log", nargs='?',metavar="filename", help="write to log file", default="NA")
 parser.add_argument("-m","--mono", help="helper flag for naming, import, and functions (partial support)", action="store_true")
@@ -134,6 +135,13 @@ else:
 	print
 	print "Building font..."
 
+# symbol key input file
+if os.path.exists(args.keys):
+	if args.verbose:
+		print "using symbol key file " + args.keys
+if args.keys != "symkeys.txt":
+	args.quick = True;
+
 if args.dir:
 	fontDir = sourceDir + args.dir + "/"
 	# check directory
@@ -215,55 +223,55 @@ for line in lines:
 
 font.createChar(0, ".notdef")
 
-if not args.quick:
-	glfset = [line.strip() for line in open(args.glyph)]
+glfset = [line.strip() for line in open(args.glyph)]
 
-	if args.verbose:
-		print
-		print "Glyph settings file: " + args.glyph
-		for line in glfset:
-			if line[0] != "#":
-				if "=" in line:
-					parts = line.split('=')
-					print "\tsetting: " + parts[0] + " as " + parts[1]
-				else:
-					print "\tcalling: " + line
-
-	glfCnt=0;
-	glfTtl=0;
-	glfStart = time.time()
+if args.verbose:
 	print
-	print "ISWA 2010 Glyphs"
+	print "Glyph settings file: " + args.glyph
+	for line in glfset:
+		if line[0] != "#":
+			if "=" in line:
+				parts = line.split('=')
+				print "\tsetting: " + parts[0] + " as " + parts[1]
+			else:
+				print "\tcalling: " + line
+
+glfCnt=0;
+glfTtl=0;
+glfStart = time.time()
+print
+print "ISWA 2010 Glyphs"
+if args.verbose:
+	print "\tload file " + args.keys
+infile = open(args.keys, "r")
+missing = 0
+codepoint = -1
+
+for symkey in infile:
+	glfTtl = glfTtl + 1
+	glyph_name = symkey[:-1]
 	if args.verbose:
-		print "\tload file symkeys.txt"
-	infile = open("symkeys.txt", "r")
-	missing = 0
-	codepoint = -1
-	for symkey in infile:
-		glfTtl = glfTtl + 1
-		glyph_name = symkey[:-1]
-		if args.verbose:
-			glfCnt = glfCnt + 1
-			if glfCnt==60:
-				print glyph_name,
-				sys.stdout.flush()
-				glfCnt=0
-		else:
-			glfCnt = glfCnt + 1
-			if glfCnt==1150:
-				print ".",
-				sys.stdout.flush()
-				glfCnt=0
+		glfCnt = glfCnt + 1
+		if glfCnt==60:
+			print glyph_name,
+			sys.stdout.flush()
+			glfCnt=0
+	else:
+		glfCnt = glfCnt + 1
+		if glfCnt==1150:
+			print ".",
+			sys.stdout.flush()
+			glfCnt=0
 
-		if args.unicode:
-			codepoint = key2code(glyph_name)
-		char = font.createChar(codepoint,glyph_name)
+	if args.unicode:
+		codepoint = key2code(glyph_name)
+	char = font.createChar(codepoint,glyph_name)
 
-		filename = fontDir + glyph_name + "." + args.ext
-		if os.path.isfile(filename):
-			char.importOutlines(filename)
-		else:
-			missing += 1
+	filename = fontDir + glyph_name + "." + args.ext
+	if os.path.isfile(filename):
+		char.importOutlines(filename)
+	else:
+		missing += 1
 
 #		glyph = char.background
 #		glyph.removeOverlap();
@@ -271,27 +279,27 @@ if not args.quick:
 #		char.clear();
 #		char.background=glyph;
 
-		for line in glfset:
-			if line[0] != "#":
-				if "=" in line: 
-					parts = line.split('=')
-					if parts[1][0]=='"':
-						parts[1] = parts[1].replace('"','')
-						setattr(char,parts[0],parts[1])
-					else:
-						setattr(char,parts[0],int(parts[1]))
+	for line in glfset:
+		if line[0] != "#":
+			if "=" in line: 
+				parts = line.split('=')
+				if parts[1][0]=='"':
+					parts[1] = parts[1].replace('"','')
+					setattr(char,parts[0],parts[1])
 				else:
-					getattr(char, line)()
+					setattr(char,parts[0],int(parts[1]))
+			else:
+				getattr(char, line)()
+print "OK"
 
-	print "OK"
-	
-	if missing == 37811:
-		print
-		print "FAILURE: no files with extension " + args.ext + " in directory " + fontDir
-		sys.exit(-1)
-	
-	glfEnd = time.time()
+if missing == 37811:
+	print
+	print "FAILURE: no files with extension " + args.ext + " in directory " + fontDir
+	sys.exit(-1)
 
+glfEnd = time.time()
+
+if not args.quick:
 	chrStart = time.time()
 
 	#Unicode 8
