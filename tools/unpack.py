@@ -31,8 +31,10 @@ import glob
 parser = argparse.ArgumentParser(description="SignWriting 2010 unpacking script takes a data file and creates a directory of files."
 	,epilog="Source SVG and completed TTF available online https://github.com/slevinski/signwriting_2010_fonts")
 parser.add_argument("datafile", nargs="?", help="name of the data file in sources for input")
+parser.add_argument("-a","--adjust", metavar="filename", help="file with symbol adjustment numbers")
 parser.add_argument("-d","--dir", metavar="directory", help="name of directory in sources for output")
-parser.add_argument("-i","--inverse", help="for SVG, switch black and white paths", action="store_true")
+parser.add_argument("-i","--id", help="for SVG, use the symbol key as the ID of the SVG",action="store_true")
+parser.add_argument("-r","--reverse", help="for SVG, switch black and white paths", action="store_true")
 parser.add_argument("-s","--shadow", help="for SVG, switch all paths to black", action="store_true")
 parser.add_argument("-m","--magnify", metavar="level", type=int, default=1, help="for SVG, magnification level, default of 1")
 parser.add_argument("-v","--viewbox", help="for SVG, include viewBox", action="store_true")
@@ -78,6 +80,18 @@ for line in lines:
 	h = line[11:13]
 	sizes[key] = [w,h]
 
+if args.adjust:
+	lines = [line.strip() for line in open(args.adjust)]
+	sizesAdj = {}
+	for line in lines:
+		parts = line.split(',')
+		key = parts[0]
+		x = float(parts[1])
+		y = float(parts[2])
+		w = float(parts[3])
+		h = float(parts[4])
+		sizesAdj[key] = [x,y,w,h]
+
 if os.path.exists(sourceDir + args.datafile):
 	print "input data file " + sourceDir + args.datafile
 else:
@@ -110,19 +124,23 @@ for line in lines:
 				svg += '<svg xmlns="http://www.w3.org/2000/svg"'
 			else:
 				svg = '<svg'
+			
+			if args.id:
+				svg += ' id="' + key + '"';
+				
 			if 'class="sym-' in data:
 				# source SVG with 2 colors
-				if args.inverse:
+				if args.reverse:
 					data = data.replace(' fill="#ffffff" class="sym-fill"','')
 					data = data.replace(' class="sym-line"','  fill="#ffffff"')
 				if args.shadow:
 					data = data.replace(' fill="#ffffff"','')
 			elif 'fill="#000000"' in data:
 				# generated SVG with 1 colors
-				if args.inverse:
+				if args.reverse:
 					data = data.replace('fill="#000000"','fill="#ffffff"')
 			else:
-				if args.inverse:
+				if args.reverse:
 					data = data.replace('<path','<path fill="#ffffff"')
 
 			if args.viewbox:
@@ -134,16 +152,26 @@ for line in lines:
 					svg += ' viewBox="0 0 ' + sizes[key][0] + ' ' + sizes[key][1] + '"'
 				svg += '>' + data + "</svg>"
 			else:
-				if int(args.magnify) != 1:
+				if int(args.magnify) != 1 or args.adjust:
+					if args.adjust:
+						aligned = sizesAdj[key][0]==0 and sizesAdj[key][1]==0 and sizesAdj[key][2]==float(sizes[key][0]) and sizesAdj[key][3]==float(sizes[key][1])
+					else:
+						aligned = True;
 					start = data.index("translate(")
 					end = data.index(")", start)+1
 					translate =data[start:end]
 					start = translate.index("(")+1
 					end = translate.index(",", start)
-					transx =int(translate[start:end])*int(args.magnify)
+					transx = float(translate[start:end])
+					if not aligned:
+						transx = transx - sizesAdj[key][0]  / sizesAdj[key][2] * int(sizes[key][0])+0.1
+					transx = transx * int(args.magnify)
 					start = translate.index(",")+1
 					end = translate.index(")", start)
-					transy =int(translate[start:end])*int(args.magnify)
+					transy = float(translate[start:end])
+					if not aligned:
+						transy = transy + (int(sizes[key][1]) - sizesAdj[key][1] - sizesAdj[key][3]) / sizesAdj[key][3] * int(sizes[key][1]) - 0.1
+					transy = transy * int(args.magnify)
 					data = data.replace(translate,"translate(" + str(transx) + "," + str(transy) + ")")
 
 					start = data.index("scale(")
@@ -151,10 +179,14 @@ for line in lines:
 					scale =data[start:end]
 					start = scale.index("(")+1
 					end = scale.index(",", start)
-					scalex =float(scale[start:end])*int(args.magnify)
+					scalex = float(scale[start:end])*int(args.magnify)
+					if not aligned:
+						scalex = scalex / sizesAdj[key][2] * (int(sizes[key][0])-0.2)
 					start = scale.index(",")+1
 					end = scale.index(")", start)
 					scaley =float(scale[start:end])*int(args.magnify)
+					if not aligned:
+						scaley = scaley / sizesAdj[key][3] * (int(sizes[key][1])-0.2)
 					data=data.replace(scale,"scale(" + str(scalex) + "," + str(scaley) + ")")
 					
 				w = int(sizes[key][0]) * int(args.magnify)
