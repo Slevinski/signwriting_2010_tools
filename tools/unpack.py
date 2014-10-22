@@ -32,6 +32,7 @@ parser = argparse.ArgumentParser(description="SignWriting 2010 unpacking script 
 	,epilog="Source SVG and completed TTF available online https://github.com/slevinski/signwriting_2010_fonts")
 parser.add_argument("datafile", nargs="?", help="name of the data file in sources for input")
 parser.add_argument("-a","--adjust", metavar="filename", help="file with symbol adjustment numbers")
+parser.add_argument("-b","--beta", metavar="filename", help="file with symbol adjustment numbers from output")
 parser.add_argument("-d","--dir", metavar="directory", help="name of directory in sources for output")
 parser.add_argument("-i","--id", help="for SVG, use the symbol key as the ID of the SVG",action="store_true")
 parser.add_argument("-r","--reverse", help="for SVG, switch black and white paths", action="store_true")
@@ -91,6 +92,18 @@ if args.adjust:
 		w = float(parts[3])
 		h = float(parts[4])
 		sizesAdj[key] = [x,y,w,h]
+
+if args.beta:
+	lines = [line.strip() for line in open(args.beta)]
+	sizesBeta = {}
+	for line in lines:
+		parts = line.split(',')
+		key = parts[0]
+		x = float(parts[1])
+		y = float(parts[2])
+		w = float(parts[3])
+		h = float(parts[4])
+		sizesBeta[key] = [x,y,w,h]
 
 if os.path.exists(sourceDir + args.datafile):
 	print "input data file " + sourceDir + args.datafile
@@ -163,16 +176,9 @@ for line in lines:
 					start = translate.index("(")+1
 					end = translate.index(",", start)
 					transx = float(translate[start:end])
-					if not aligned:
-						transx = transx - sizesAdj[key][0]  / sizesAdj[key][2] * int(sizes[key][0])+0.1
-					transx = transx * int(args.magnify)
 					start = translate.index(",")+1
 					end = translate.index(")", start)
 					transy = float(translate[start:end])
-					if not aligned:
-						transy = transy + (int(sizes[key][1]) - sizesAdj[key][1] - sizesAdj[key][3]) / sizesAdj[key][3] * int(sizes[key][1]) - 0.1
-					transy = transy * int(args.magnify)
-					data = data.replace(translate,"translate(" + str(transx) + "," + str(transy) + ")")
 
 					start = data.index("scale(")
 					end = data.index(")", start)+1
@@ -180,14 +186,37 @@ for line in lines:
 					start = scale.index("(")+1
 					end = scale.index(",", start)
 					scalex = float(scale[start:end])*int(args.magnify)
-					if not aligned:
-						scalex = scalex / sizesAdj[key][2] * (int(sizes[key][0])-0.2)
 					start = scale.index(",")+1
 					end = scale.index(")", start)
 					scaley =float(scale[start:end])*int(args.magnify)
+
+
 					if not aligned:
-						scaley = scaley / sizesAdj[key][3] * (int(sizes[key][1])-0.2)
+						scaleAx = (int(sizes[key][0])-0.2)/(sizesAdj[key][2]+0.2);
+						if (args.beta):
+							scaleAx = scaleAx * (int(sizes[key][0])-0.4)/(sizesBeta[key][2]);
+						scalex = scalex * scaleAx
+						scaleAy = (int(sizes[key][1])-0.4)/(sizesAdj[key][3]+0.4)
+						if (args.beta):
+							scaleAy = scaleAy * (int(sizes[key][1])-0.4)/(sizesBeta[key][3]);
+						scaley = scaley * scaleAy
 					data=data.replace(scale,"scale(" + str(scalex) + "," + str(scaley) + ")")
+
+
+					if not aligned:
+						transx = ((sizesAdj[key][0]-0.2) * scaleAx) + 0.1
+						if (args.beta):
+							transx = transx + 0.15 - sizesBeta[key][0]
+					if not aligned:
+						transy = scaleAy * int(sizes[key][1]) + (sizesAdj[key][1] * scaleAy) + 0.1;
+						if (args.beta):
+							transy = transy + 0.15 - sizesBeta[key][1]
+
+					transx = transx * int(args.magnify)
+					transy = transy * int(args.magnify)
+					data = data.replace(translate,"translate(" + str(transx) + "," + str(transy) + ")")
+
+
 					
 				w = int(sizes[key][0]) * int(args.magnify)
 				h = int(sizes[key][1]) * int(args.magnify)
