@@ -31,8 +31,8 @@ import glob
 parser = argparse.ArgumentParser(description="SignWriting 2010 unpacking script takes a data file and creates a directory of files."
 	,epilog="Source SVG and completed TTF available online https://github.com/slevinski/signwriting_2010_fonts")
 parser.add_argument("datafile", nargs="?", help="name of the data file in sources for input")
-parser.add_argument("-a","--adjust", metavar="filename", help="file with symbol adjustment numbers")
-parser.add_argument("-b","--beta", metavar="filename", help="file with symbol adjustment numbers from output")
+parser.add_argument("-a","--adjust", metavar="filename", help="file with symbol adjustment numbers from svg_bbox")
+parser.add_argument("-b","--beta", metavar="filename", help="file with symbol adjustment numbers from svg_bbox of first adjustment")
 parser.add_argument("-d","--dir", metavar="directory", help="name of directory in sources for output")
 parser.add_argument("-i","--id", help="for SVG, use the symbol key as the ID of the SVG",action="store_true")
 parser.add_argument("-r","--reverse", help="for SVG, switch black and white paths", action="store_true")
@@ -168,6 +168,8 @@ for line in lines:
 				if int(args.magnify) != 1 or args.adjust:
 					if args.adjust:
 						aligned = sizesAdj[key][0]==0 and sizesAdj[key][1]==0 and sizesAdj[key][2]==float(sizes[key][0]) and sizesAdj[key][3]==float(sizes[key][1])
+						if key in ['S2d50c','S2d51c','S2d52c','S3711c','S3712c','S38303']:
+							aligned=False;
 					else:
 						aligned = True;
 					start = data.index("translate(")
