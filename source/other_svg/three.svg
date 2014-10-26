@@ -1,4 +1,4 @@
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 -450 500 350" width="15" height="30"><g transform="scale(-1, 1) rotate(180)">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="15" height="30"><g transform="translate(0,360) scale(-0.5, 0.5) rotate(180)">
 <path d="M26 78l42 54c38 -40 88 -76 163 -76c77 0 132 46 132 117c0 76 -52 127 -204 127v63c136 0 181 52 181 119c0 62 -42 101 -110 101c-53 0 -98 -27 -136 -65l-44 52c49 46 108 80 183 80c111 0 191 -59 191 -162c0 -77 -47 -126 -116 -152v-4c77 -18 138 -74 138 -162
 c0 -113 -93 -182 -210 -182c-102 0 -167 43 -210 90z" />
 </g></svg>
