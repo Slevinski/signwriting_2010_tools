@@ -1,11 +1,10 @@
 The SignWriting 2010 Tools
 =====================
 - - - 
-> Version 1.3  
-October 13th, 2014
+> Version 1.4  
+November 10th, 2014
 
-The SignWriting 2010 Tools are used to build a typeface for written sign languages
-called the [SignWriting 2010 Fonts][29].
+The SignWriting 2010 Tools are used to build the fonts of the SignWriting 2010 typeface.  The [SignWriting 2010 Fonts][29] project contains the input and the output of the tools.  The fonts are designed for the [SignWriting 2010 JavaScript Library][60].
 
 Developers
 ----------
@@ -70,15 +69,15 @@ To build individual font files, use the Python script `build.py`.   Use "-h" for
     > python build.py -h
     
     usage: build.py [-h] [-c filename] [-d directory] [-e extension] [-f]
-                    [-g filename] [-i version] [-l [filename]] [-m] [-p] [-q] [-s]
-                    [-t fontname] [-v]
+                    [-g filename] [-k filename] [-i version] [-l [filename]] [-m]
+                    [-p] [-q] [-s] [-t fontname] [-u] [-v]
                     [{,Filling,Shadow}]
-    
-    SignWriting 2010 build script for TTF files from SVG (version 1.2.0)
-    
+
+    SignWriting 2010 build script for TTF files from SVG (version 1.4.0)
+
     positional arguments:
       {,Filling,Shadow}     name of the subfont
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       -c filename, --custom filename
@@ -91,8 +90,11 @@ To build individual font files, use the Python script `build.py`.   Use "-h" for
       -f, --force           overwrite existing font files
       -g filename, --glyph filename
                             name of glyph customization file, default of glyph.txt
-      -i version, --iswa version
-                            version of the ISWA 2010, default of 1.10.1
+      -k filename, --keys filename
+                            name of symbol key file, default of symkeys.txt
+      -i version, --ident version
+                            version of the SignWriting 2010 Fonts, default of
+                            1.1.0
       -l [filename], --log [filename]
                             write to log file
       -m, --mono            helper flag for naming, import, and functions (partial
@@ -105,7 +107,10 @@ To build individual font files, use the Python script `build.py`.   Use "-h" for
       -t fontname, --title fontname
                             prefix for the various font names and files, default
                             of SignWriting 2010
+      -u, --unicode         use Unicode code points for individual glyphs
       -v, --verbose         increase output verbosity
+
+- - -
 
 To build all of the release font files, use the shell script `release.sh`.
 
@@ -210,7 +215,6 @@ The text file `custom.txt` contains a list of custom settings for the entire fon
 The text file `glyph.txt` contains a list of glyph settings to apply to each char.
 
     right_side_bearing=0
-    autoInstr
 
 - - -
 
@@ -222,8 +226,8 @@ Reference
 The character encodings used in SignWriting 2010 are defined in an Internet Draft submitted to the IETF: [draft-slevinski-signwriting-text][26].
 The document is improved and resubmitted every 6 months.
 The character design has been stable since January 12, 2012.
-The current version of the Internet Draft is 03.
-The next version is planned for November 2014.
+The current version of the Internet Draft is 04.
+The next version is planned for May 2015.
 
 - - -
 
@@ -231,14 +235,17 @@ Epilogue
 ----------
 This is a work in progress. Feedback, bug reports, and patches are welcomed.
 
+While I strived to keep the code clean and organized, it got away from me in the end.  The fine tuning and the symbol adjustments were not as straightforward as anticipated.  The script `unpack.py` required a series of complications, as found with the --adjust and --beta flags.  These flags and custom data files were used to update the source SVG.  Because of the new source SVG, these types of adjustments will not be needed again.  Future adjustments may be required of a different sort to address the occasional flattening of various symbols on specific browser/platform combinations.
+
 - - -
 
 To Do
 -------
-* Create mono fonts for use outside of SVGs
+* Clean up code and restructure as needed.
 
 Version History
 ------------------
+* 1.4 - Nov 10th, 2014: development updates for the SignWriting 2010 JavaScript Library
 * 1.3 - Oct 13th, 2014: production ready fonts
 * 1.2 - Oct 6th, 2014: refactored build for simplicity, expanded demo for linking and optional PNG
 * 1.1 - Oct 4th, 2014: added script to create demo pages
@@ -303,3 +310,6 @@ Version History
 [56]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/source/svg_fill.zip
 [57]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010.ttf
 [58]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010.log
+[59]: http://codepen.io/Slevinski/pen/exnju
+[60]: https://github.com/Slevinski/sw10js
+[61]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010.mobileconfig

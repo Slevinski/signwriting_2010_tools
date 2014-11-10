@@ -60,7 +60,7 @@ print '<div id="output"></div>';
 
 
 top = 'S2ff00 S2ff01 S2ff02 S2ff03 S2ff20 S2ff31 S2ff33'
-bottom = ''
+left = ''
 
 zero = 0
 other = 0
@@ -76,16 +76,15 @@ for line in lines:
 	if xMin == 0 and yMin == 0 and parts[2][-1] and parts[4][-1]:
 		zero += 1
 	else:
-		if xMin == 0 or yMin == 0:
+		if yMin == 0: # or yMin == 2:
 #		if yMin == 1:
 #		if key[0:4] == 'S2ff':
 #		if key in top:
-#		if key in bottom:
+#		if key in left:
 			other += 1
 			print "<h2>" + key + "</h2>";
-			if xMin == 0: print "X hit<br>"
-			if yMin == 0: print "Y hit<br>"
-			print '<canvas id="' + key + '" width="' + str(150 + xMax) + '" height="' + str(150 + yMax) + '"></canvas>'
+			print "<p>" + str(xMin).rstrip('0').rstrip('.') + ', ' + str(yMin).rstrip('0').rstrip('.')
+			print '<p><canvas id="' + key + '" width="' + str(150 + xMax) + '" height="' + str(150 + yMax) + '"></canvas>'
 			fnCalls += 'drawGrid("' + key + '");\n';
 
 print '<script>'

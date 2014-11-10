@@ -167,9 +167,13 @@ for line in lines:
 			else:
 				if int(args.magnify) != 1 or args.adjust:
 					if args.adjust:
-						aligned = sizesAdj[key][0]==0 and sizesAdj[key][1]==0 and sizesAdj[key][2]==float(sizes[key][0]) and sizesAdj[key][3]==float(sizes[key][1])
+						aligned = sizesAdj[key][0]==0 and sizesAdj[key][1]==0 and sizesAdj[key][2]==int(sizes[key][0]) and sizesAdj[key][3]==int(sizes[key][1])
 						if key in ['S2d50c','S2d51c','S2d52c','S3711c','S3712c','S38303']:
-							aligned=False;
+							aligned=False
+						if key in ['S10914','S11114','S11144','S11604','S11614','S11704','S1300c','S1301c','S14104','S14124','S14144','S1585c','S16746','S17806','S1780e','S18502','S18922','S18952','S1895a','S19a0b','S19c2e','S1a902','S1a912','S1a93a','S1ab02','S1ab12','S1ab3e','S1ab5e','S1af04','S1af0c','S1af3c','S1b356','S22308','S2403e','S25f14','S26e00','S26e10','S28346','S28408','S28439','S28449','S2a220','S2b003','S32616','S37120']:
+							aligned=False
+						if key in ['S1415c','S1a92e','S1a92a','S1411c','S1171c','S29e2d','S1a926','S28459','S1af1c','S1ab32','S1781e','S14154','S1413c','S14114','S11714','S29e2a','S29d26','S2834a','S2531a','S24718','S24628','S2c825','S29e26','S29d1a','S28349','S25316','S24714','S24624','S1a922','S1091c','S1111c','S1160c','S1161c','S1170c','S1311c','S1314c','S1410c','S14134','S1414c','S1674e','S17816','S1801c','S18318','S1850a','S19b1c','S1a90a','S1a91a','S1a94a','S1ab2e','S1ab42','S1af14','S23e33','S24608','S24618','S24708','S24728','S24c2d','S2530a','S25411','S28151','S28345','S28418','S28451','S29d16','S29e0a','S29e1a','S2a228','S2c645','S2c815','S2de28','S2e42f','S32224']:
+							aligned=False
 					else:
 						aligned = True;
 					start = data.index("translate(")
@@ -181,7 +185,7 @@ for line in lines:
 					start = translate.index(",")+1
 					end = translate.index(")", start)
 					transy = float(translate[start:end])
-
+					
 					start = data.index("scale(")
 					end = data.index(")", start)+1
 					scale =data[start:end]

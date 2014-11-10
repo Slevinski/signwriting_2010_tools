@@ -34,7 +34,7 @@ import time
 from stat import * # ST_SIZE etc
 import glob
 
-__version__ = '1.2.0'
+__version__ = '1.4.0'
 
 start = time.time()
 
@@ -50,7 +50,7 @@ parser.add_argument("-e","--ext", metavar="extension", default="svg", help="name
 parser.add_argument("-f","--force", help="overwrite existing font files", action="store_true")
 parser.add_argument("-g","--glyph", metavar="filename", default="glyph.txt", help="name of glyph customization file, default of %(default)s")
 parser.add_argument("-k","--keys", metavar="filename", default="symkeys.txt", help="name of symbol key file, default of %(default)s")
-parser.add_argument("-i","--iswa", metavar="version", default="1.10.1", help="version of the ISWA 2010, default of %(default)s")
+parser.add_argument("-i","--ident", metavar="version", default="1.1.0", help="version of the SignWriting 2010 Fonts, default of %(default)s")
 parser.add_argument("-l","--log", nargs='?',metavar="filename", help="write to log file", default="NA")
 parser.add_argument("-m","--mono", help="helper flag for naming, import, and functions (partial support)", action="store_true")
 parser.add_argument("-p","--preview", help="perform all of the actions but generating the TTF output", action="store_true")
@@ -192,7 +192,7 @@ font.familyname = fontTitle + fontPostfix
 font.fondname = fontTitle + fontPostfix
 font.fullname = fontTitle + fontPostfix
 font.fontlog = "Create October 2014"
-font.version = args.iswa
+font.version = args.ident
 
 if args.verbose:
 	print
