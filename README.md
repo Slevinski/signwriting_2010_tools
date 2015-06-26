@@ -1,8 +1,8 @@
 The SignWriting 2010 Tools
 =====================
 - - - 
-> Version 1.4  
-November 10th, 2014
+> Version 1.4.1  
+June 26th, 2015
 
 The SignWriting 2010 Tools are used to build the fonts of the SignWriting 2010 typeface.  The [SignWriting 2010 Fonts][29] project contains the input and the output of the tools.  The fonts are designed for the [SignWriting 2010 JavaScript Library][60].
 
@@ -47,7 +47,7 @@ These files and more are available in the `other-svg` directory.
 The [Feature files][41] define the standard ligature substitution for the various character sets. Three different character sets can be used to access the glyphs.
 
 [1D800..1DAAF][42]; Sutton SignWriting  
-To be published in [Unicode 8][21] in [2015][22].
+[Unicode 8][21] support without facial diacritic combining.
 
 [FD800..FDFFF][43]; SignWriting Text  
 [Private Use Area characters][26] for 2-dimensional text.
@@ -226,8 +226,8 @@ Reference
 The character encodings used in SignWriting 2010 are defined in an Internet Draft submitted to the IETF: [draft-slevinski-signwriting-text][26].
 The document is improved and resubmitted every 6 months.
 The character design has been stable since January 12, 2012.
-The current version of the Internet Draft is 04.
-The next version is planned for May 2015.
+The current version of the Internet Draft is 05.
+The next version is planned for November 2015.
 
 - - -
 
@@ -245,6 +245,7 @@ To Do
 
 Version History
 ------------------
+* 1.4.1 - June 26th, 2015: no facial diacritic combining 
 * 1.4 - Nov 10th, 2014: development updates for the SignWriting 2010 JavaScript Library
 * 1.3 - Oct 13th, 2014: production ready fonts
 * 1.2 - Oct 6th, 2014: refactored build for simplicity, expanded demo for linking and optional PNG
@@ -313,3 +314,5 @@ Version History
 [59]: http://codepen.io/Slevinski/pen/exnju
 [60]: https://github.com/Slevinski/sw10js
 [61]: https://github.com/Slevinski/signwriting_2010_fonts/raw/master/fonts/SignWriting%202010.mobileconfig
+[62]: http://github.com/Slevinski/sw10js
+[63]: http://www.opensource.org/licenses/mit-license.php
