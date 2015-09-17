@@ -1,8 +1,8 @@
 The SignWriting 2010 Tools
 =====================
 - - - 
-> Version 1.4.1  
-June 26th, 2015
+> Version 1.5  
+September 17th, 2015
 
 The SignWriting 2010 Tools are used to build the fonts of the SignWriting 2010 typeface.  The [SignWriting 2010 Fonts][29] project contains the input and the output of the tools.  The fonts are designed for the [SignWriting 2010 JavaScript Library][60].
 
@@ -18,6 +18,8 @@ To create the demo pages, you need pystache for templating.  Demo pages are writ
 To retrace the SVG from the command line, you will need several command line tools: Inkscape, pngtopnm, mkbitmap, and potrace.
 
 To unpack the SVG Line and SVG Fill data files, the `unpack.py` tool can be used.
+
+To create the SWAP symbol data file, the `repack.py` tool can be used.
 
 - - -
 
@@ -245,6 +247,7 @@ To Do
 
 Version History
 ------------------
+* 1.5 - Sept 17th, 2015: added repack.py for SWAP symbol data file 
 * 1.4.1 - June 26th, 2015: no facial diacritic combining 
 * 1.4 - Nov 10th, 2014: development updates for the SignWriting 2010 JavaScript Library
 * 1.3 - Oct 13th, 2014: production ready fonts
