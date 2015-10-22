@@ -70,6 +70,7 @@ for line in lines:
 		parts = line.split("\t")
 		key = parts[0]
 		data = parts[1]
+		data = data.replace('"/> <path d="', ' ');
 		start = data.index("<g")
 		end = data.index(">", start)+1
 		dataG = data[start:end]
@@ -86,6 +87,7 @@ for line in lines:
 		parts = line.split("\t")
 		key = parts[0]
 		data = parts[1]
+		data = data.replace('"/> <path d="', ' ');
 		start = data.index("<g")
 		end = data.index(">", start)+1
 		dataG = data[start:end]
