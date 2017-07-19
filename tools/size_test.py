@@ -46,7 +46,7 @@ for line in lines:
 		count = 0
 		item += 1
 	count += 1
-	print "      assert.equal(sw10.size('" + key + "'),'" + str(x) + 'x' + str(y) + "','" + key + "');"
+	print "      assert.equal(ssw.size('" + key + "'),'" + str(x) + 'x' + str(y) + "','" + key + "');"
 
 print '    });'
 print '  });'
