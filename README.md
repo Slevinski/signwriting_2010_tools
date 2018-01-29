@@ -2,7 +2,7 @@ The SignWriting 2010 Tools
 =====================
 - - - 
 > Version 2.2.0  
-January 29th, 2018 . 
+January 29th, 2018  
 License: MIT
 
 The SignWriting 2010 Tools are used to build the fonts of the Sutton SignWriting typeface.  The [SignWriting 2010 Fonts][29] project contains the input and the output of the tools.  The fonts are designed for the [SignWriting 2010 JavaScript Library][60].
