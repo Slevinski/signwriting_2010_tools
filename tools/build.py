@@ -3,20 +3,7 @@
 #
 # Copyright (c) 2014-2017 Stephen E Slevinski Jr <slevin@signpuddle.net>
 #
-# License:
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
-# (at your option) any later version.
-# 
-# This package is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# License: MIT
 #
 # Reference
 # http://fontforge.org/scripting-tutorial.html
@@ -44,7 +31,7 @@ start = time.time()
 ##################
 parser = argparse.ArgumentParser(description="Sutton SignWriting build script for TTF files from SVG (version " + __version__ + ")"
 	,epilog="Source SVG and completed TTF available online https://github.com/slevinski/signwriting_2010_fonts")
-parser.add_argument("subfont",nargs='?',choices=['Line', 'Fill', '8', '1d', '1dOpt'], help="name of the subfont")
+parser.add_argument("subfont",nargs='?',choices=['Line', 'Fill', 'OneD', '8', '1d', '1dOpt', 'Null'], help="name of the subfont")
 parser.add_argument("-a","--fea", help="include Unicode 8 features", action="store_true")
 parser.add_argument("-b","--beta", help="include beta design to overwrite Unicode 8", action="store_true")
 parser.add_argument("-c","--custom", metavar="filename", default="custom.txt", help="name of font customization file, default of %(default)s")
@@ -154,6 +141,9 @@ if args.dir:
 	else:
 		print "FAILURE: directory " + fontDir + " does not exist"
 		sys.exit(-1)
+elif args.subfont == "Null":
+	if args.verbose:
+		print "using null.svg for import"
 else:
 	directories = os.walk( os.path.join(sourceDir,'.')).next()[1]
 	directories.remove('templates')
@@ -265,67 +255,78 @@ missing = 0
 codepoint = -1
 
 for symkey in infile:
-	glfTtl = glfTtl + 1
-	glyph_name = symkey[:-1]
-	if args.verbose:
-		glfCnt = glfCnt + 1
-		if glfCnt==60:
-			print glyph_name,
-			sys.stdout.flush()
-			glfCnt=0
-	else:
-		glfCnt = glfCnt + 1
-		if glfCnt==1150:
-			print ".",
-			sys.stdout.flush()
-			glfCnt=0
+	planes = args.unicode.split('_')
 
-	codepoint = key2code(glyph_name,args.unicode)
+	for idx,plane in enumerate(planes):
+
+		glfTtl = glfTtl + 1
+		if idx == 0:
+			glyph_name = symkey[:-1]
+		else:
+			glyph_name = symkey[:-1] + " " + plane
+		if args.verbose:
+			glfCnt = glfCnt + 1
+			if glfCnt==60:
+				print glyph_name,
+				sys.stdout.flush()
+				glfCnt=0
+		else:
+			glfCnt = glfCnt + 1
+			if glfCnt==1150:
+				print ".",
+				sys.stdout.flush()
+				glfCnt=0
+
+
+		codepoint = key2code(glyph_name,plane)
 		
-	char = font.createChar(codepoint,glyph_name)
+		char = font.createChar(codepoint,glyph_name)
 
-	filename = fontDir + glyph_name + "." + args.ext
-	if os.path.isfile(filename):
-		char.importOutlines(filename)
-	else:
-		missing += 1
-
-#		glyph = char.background
-#		glyph.removeOverlap();
-#		char.activeLayer=0
-#		char.clear();
-#		char.background=glyph;
-
-	for line in glfset:
-		if line[0] != "#":
-			if "=" in line: 
-				parts = line.split('=')
-				if parts[1][0]=='"':
-					parts[1] = parts[1].replace('"','')
-					setattr(char,parts[0],parts[1])
-				else:
-					setattr(char,parts[0],int(parts[1]))
+		if args.subfont == "Null":
+			char.importOutlines(sourceDir + "other_svg/null.svg");
+		else:
+			filename = fontDir + glyph_name + "." + args.ext
+			if os.path.isfile(filename):
+				char.importOutlines(filename)
 			else:
-				getattr(char, line)()
+				missing += 1
 
-	if args.beta or args.next:
-		char.transform(psMat.translate(0,int(sizes[glyph_name][1])*5-135))
-		setattr(char,"width",int(sizes[glyph_name][0])*10+40);  # bearing 20 each side
+		#		glyph = char.background
+		#		glyph.removeOverlap();
+		#		char.activeLayer=0
+		#		char.clear();
+		#		char.background=glyph;
+
+		for line in glfset:
+			if line[0] != "#":
+				if "=" in line: 
+					parts = line.split('=')
+					if parts[1][0]=='"':
+						parts[1] = parts[1].replace('"','')
+						setattr(char,parts[0],parts[1])
+					else:
+						setattr(char,parts[0],int(parts[1]))
+				else:
+					getattr(char, line)()
+
+		if args.beta or args.next:
+			char.transform(psMat.translate(0,int(sizes[glyph_name][1])*5-135))
+			setattr(char,"width",int(sizes[glyph_name][0])*10+40);  # bearing 20 each side
 
 
 
-	if args.verbose:
-		glfCnt = glfCnt + 1
-		if glfCnt==60:
-			print glyph_name,
-			sys.stdout.flush()
-			glfCnt=0
-	else:
-		glfCnt = glfCnt + 1
-		if glfCnt==1150:
-			print ".",
-			sys.stdout.flush()
-			glfCnt=0
+		if args.verbose:
+			glfCnt = glfCnt + 1
+			if glfCnt==60:
+				print glyph_name,
+				sys.stdout.flush()
+				glfCnt=0
+		else:
+			glfCnt = glfCnt + 1
+			if glfCnt==1150:
+				print ".",
+				sys.stdout.flush()
+				glfCnt=0
 
 
 print "OK"

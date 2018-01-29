@@ -1,8 +1,9 @@
 The SignWriting 2010 Tools
 =====================
 - - - 
-> Version 2.1.0  
-July 19th, 2017
+> Version 2.2.0  
+January 29th, 2018
+License: MIT
 
 The SignWriting 2010 Tools are used to build the fonts of the Sutton SignWriting typeface.  The [SignWriting 2010 Fonts][29] project contains the input and the output of the tools.  The fonts are designed for the [SignWriting 2010 JavaScript Library][60].
 
@@ -247,6 +248,7 @@ To Do
 
 Version History
 ------------------
+* 2.2.0 - Jan 29th, 2018: One-D font and license change 
 * 2.1.0 - Jul 19th, 2017: 1D fonts and line font on plane 15 
 * 2.0.0 - Aug 23rd, 2016: Version 2 for Sutton SignWriting
 * 1.5.1 - Oct 22nd, 2015: fix repack.py to merge multiple paths
