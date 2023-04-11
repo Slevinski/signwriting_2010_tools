@@ -43,10 +43,9 @@ args = parser.parse_args()
 def unichar(uni):
 	code = int(uni,16)
 	try:
-		return unichr(code)
+		return chr(code)
 	except ValueError:
-		return unichr( 0xd800 + ((code-0x10000)//0x400) ) \
-			+unichr( 0xdc00 + ((code-0x10000)% 0x400) )
+		return chr(0xd800 + ((code-0x10000)//0x400))+chr(0xdc00 + ((code-0x10000)% 0x400))
 
 def key2uni(key):
 	uni = unichar(base2uni(key[1:4]))

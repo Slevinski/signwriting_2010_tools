@@ -56,10 +56,9 @@ args = parser.parse_args()
 def unichar(uni):
 	code = int(uni,16)
 	try:
-		return unichr(code)
+		return chr(code)
 	except ValueError:
-		return unichr( 0xd800 + ((code-0x10000)//0x400) ) \
-				+unichr( 0xdc00 + ((code-0x10000)% 0x400) )
+		return chr(0xd800 + ((code-0x10000)//0x400))+chr(0xdc00 + ((code-0x10000)% 0x400))
 
 def key2code(key,plane):
 	return (int(plane + '0000',16) + ((int(key[1:4],16) - 256) * 96) + ((int(key[4:5],16))*16) + int(key[5:6],16) + 1)
@@ -100,7 +99,7 @@ else:
 if args.verbose:
 	for item in sys.argv:
 		if " " in item:
-			print(f'"{item}"',)
+			print(f'"{item}"')
 		else:
 			print(item)
 	print()
@@ -560,7 +559,7 @@ if not args.preview:
 			log = math.floor(math.log(bytes, 1024))
 			print("\tfile size: %.*f %s" % (
 				2,
-				bytes / math.pow(1024, log),
+				bytes // math.pow(1024, log),
 				['bytes', 'KB', 'MB']
 				[int(log)]
 			))
