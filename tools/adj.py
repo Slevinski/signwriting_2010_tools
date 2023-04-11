@@ -4,13 +4,6 @@
 #
 # License: MIT
 
-import sys
-import os
-from time import gmtime, strftime
-import re
-import base64
-import argparse
-import glob
 
 # Key, left, top, width, height
 # S10001,0.0390625,0.1015625,20.60546875,29.20703125
@@ -36,7 +29,7 @@ for line in lines:
 	y = int(size[1]) - int(off[1])
 	sizesAdj[key] = [x,y]
 
-f = open ('adj_out.txt','w')
+f = open('adj_out.txt','w')
 
 lines = [line.strip() for line in open(infile)]
 sizesBeta = {}

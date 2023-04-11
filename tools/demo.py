@@ -10,12 +10,9 @@
 # http://fontforge.org/scripting-alpha.html
 # http://fontforge.org/python.html#f-createChar
 
-import sys
 import os
-import math
 import argparse
 import time
-import pystache
 from pystache import Renderer
 import codecs
 
@@ -52,17 +49,17 @@ def unichar(uni):
 			+unichr( 0xdc00 + ((code-0x10000)% 0x400) )
 
 def key2uni(key):
-    uni = unichar(base2uni(key[1:4]))
-    fill = fill2uni(key[4:5])
-    if fill:
-    	uni = uni + unichar(fill)
-    rota = rota2uni(key[5:6])
-    if rota:
-    	uni = uni + unichar(rota)
-    return uni
+	uni = unichar(base2uni(key[1:4]))
+	fill = fill2uni(key[4:5])
+	if fill:
+		uni = uni + unichar(fill)
+	rota = rota2uni(key[5:6])
+	if rota:
+		uni = uni + unichar(rota)
+	return uni
 
 def base2uni(base):
-	suffix = int(base,16) + int('700',16);
+	suffix = int(base,16) + int('700',16)
 	return "1D" + hex(suffix)[2:].upper()
 
 def fill2uni(fill):
@@ -80,7 +77,7 @@ def rota2uni(rota):
 		return ""
 
 def base2pua(base):
-	suffix = int(base,16) + int('730',16);
+	suffix = int(base,16) + int('730',16)
 	return "FD" + hex(suffix)[2:].upper()
 
 
@@ -135,12 +132,12 @@ def lastNav(base):
 def createDir(dir):
 	if not os.path.isdir(dir):
 		os.makedirs(dir)
-		print "creating output in directory '" + dir + "'"
+		print(f"creating output in directory '{dir}'")
 	else:
-		print "directory already exists"
-		print "remove '" + dir + "' or use -d for a different dir"
-#		sys.exit(1);
-		
+		print("directory already exists")
+		print(f"remove '{dir}' or use -d for a different dir")
+#		sys.exit(1)
+
 
 ##################
 # # initializing
@@ -161,7 +158,7 @@ footTpl = open(templateDir + "foot.html").read()
 renderer = Renderer()
 
 createDir(demoDir)
-print "READY"
+print("READY")
 
 #index
 htmlFile = demoDir + "index.html"
@@ -185,9 +182,9 @@ content = {"title":"Symbol index of " + args.dir,
 headHtml = renderer.render(headTpl, content)
 indexHtml = renderer.render(indexTpl, content)
 html = headHtml + indexHtml + footTpl
-output_file = codecs.open(htmlFile, "w", 
-   	                      encoding="utf-8", 
-       	                  errors="xmlcharrefreplace"
+output_file = codecs.open(htmlFile, "w",
+   	encoding="utf-8",
+	errors="xmlcharrefreplace"
 )
 output_file.write(html)
 
@@ -238,10 +235,10 @@ for rows in allrows:
 	navHtml = renderer.render(navTpl, content)
 	tableHtml = renderer.render(tableTpl, content)
 	html = headHtml + navHtml + tableHtml + footTpl
-	output_file = codecs.open(htmlFile, "w", 
-    	                      encoding="utf-8", 
-        	                  errors="xmlcharrefreplace"
+	output_file = codecs.open(htmlFile, "w",
+		encoding="utf-8",
+		errors="xmlcharrefreplace"
 	)
 	output_file.write(html)
 
-print "DONE"
+print("DONE")

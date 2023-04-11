@@ -6,8 +6,6 @@
 
 import sys
 import os
-from time import gmtime, strftime
-import re
 import base64
 import argparse
 import glob
@@ -38,11 +36,11 @@ args = parser.parse_args()
 def createDir(dir):
 	if not os.path.isdir(dir):
 		os.makedirs(dir)
-		print "creating output in directory '" + dir + "'"
+		print("creating output in directory '" + dir + "'")
 	else:
-		print "overwriting directory '" + dir + "'"
-		print "\tuse -d for a different dir"
-		
+		print("overwriting directory '" + dir + "'")
+		print("\tuse -d for a different dir")
+
 ##################
 # # initializing
 ##################
@@ -51,13 +49,13 @@ sourceDir = "../source/"
 if not args.datafile:
 	files = glob.glob(sourceDir + "*dat")
 	if not len(files):
-		print ""
-		print "FAILURE: no data files available for unpacking in " + sourceDir
+		print("")
+		print("FAILURE: no data files available for unpacking in " + sourceDir)
 	else:
 		print
-		print "Please specify a data file from " + sourceDir
+		print("Please specify a data file from " + sourceDir)
 		for file in files:
-			print "\tpython unpack.py " + file.replace(sourceDir,'')
+			print("\tpython unpack.py " + file.replace(sourceDir,''))
 	sys.exit()
 
 lines = [line.strip() for line in open("symsize.txt")]
@@ -93,9 +91,9 @@ if args.beta:
 		sizesBeta[key] = [x,y,w,h]
 
 if os.path.exists(sourceDir + args.datafile):
-	print "input data file " + sourceDir + args.datafile
+	print("input data file " + sourceDir + args.datafile)
 else:
-	print "FAILURE: data file " + sourceDir + args.datafile + " does not exist"
+	print("FAILURE: data file " + sourceDir + args.datafile + " does not exist")
 	sys.exit(-1)
 
 if args.dir:
@@ -124,10 +122,10 @@ for line in lines:
 				svg += '<svg xmlns="http://www.w3.org/2000/svg"'
 			else:
 				svg = '<svg'
-			
+
 			if args.id:
 				svg += ' id="' + key + '"';
-				
+
 			if 'class="sym-' in data:
 				# source SVG with 2 colors
 				if args.reverse:
@@ -147,7 +145,7 @@ for line in lines:
 				w = int(sizes[key][0]) * int(args.magnify)
 				h = int(sizes[key][1]) * int(args.magnify)
 				svg += ' width="' + str(w) + '" height="' + str(h) + '"'
-			
+
 				if args.viewbox:
 					svg += ' viewBox="0 0 ' + sizes[key][0] + ' ' + sizes[key][1] + '"'
 				svg += '>' + data + "</svg>"
@@ -172,7 +170,7 @@ for line in lines:
 					start = translate.index(",")+1
 					end = translate.index(")", start)
 					transy = float(translate[start:end])
-					
+
 					start = data.index("scale(")
 					end = data.index(")", start)+1
 					scale =data[start:end]
@@ -210,23 +208,22 @@ for line in lines:
 					data = data.replace(translate,"translate(" + str(transx) + "," + str(transy) + ")")
 
 
-					
 				w = int(sizes[key][0]) * int(args.magnify)
 				h = int(sizes[key][1]) * int(args.magnify)
 				svg += ' width="' + str(w) + '" height="' + str(h) + '"'
 				svg += '>' + data + "</svg>"
 
 			if args.test:
-				print "file: " + file
-				print "svg: " + svg
+				print("file: " + file)
+				print("svg: " + svg)
 				sys.exit()
 			f = open (file,'w')
 			f.write(svg)
 			f.close
 		else:
 			if args.test:
-				print "file: " + file
-				print "data: " + data
+				print("file: " + file)
+				print("data: " + data)
 				sys.exit()
 			f = open (file,'w')
 			f.write(base64.b64decode(data))
