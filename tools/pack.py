@@ -40,14 +40,14 @@ if not args.directory:
 	directories.remove('other_svg')
 	directories.remove('templates')
 	if not len(directories):
-		print ""
-		print "FAILURE: no directory available for packing " + sourceDir
+		print("")
+		print("FAILURE: no directory available for packing " + sourceDir)
 	else:
-		print
-		print "Please specify a directory from " + sourceDir
+		print()
+		print("Please specify a directory from " + sourceDir)
 
 		for dir in directories:
-			print "python pack.py " + dir
+			print("python pack.py " + dir)
 	sys.exit()
 
 fontDir = sourceDir + args.directory + "/"
@@ -60,55 +60,55 @@ dataFile = sourceDir + args.directory + ".dat"
 
 if os.path.exists(dataFile) and not args.test:
 	if args.force:
-		print "Overwriting data file " + dataFile
+		print("Overwriting data file " + dataFile)
 	else:
-		print
-		print "FAILURE: Data file already exists: " + dataFile
-		print "Move file or use -f to force the file creation"
-		print
+		print()
+		print("FAILURE: Data file already exists: " + dataFile)
+		print("Move file or use -f to force the file creation")
+		print()
 		sys.exit(-1)
 
 if os.path.exists(fontDir):
-	print "input directory " + fontDir
-	print "output data file " + dataFile
+	print("input directory " + fontDir)
+	print("output data file " + dataFile)
 else:
-	print "FAILURE: directory " + fontDir + " does not exist"
+	print(f"FAILURE: directory {fontDir} does not exist")
 	sys.exit(-1)
 
 if not args.test:
 	sys.stdout = open(dataFile,'w') #redirect all prints to this log file
 
-print "# SignWriting 2010 is released under the SIL Open Font License, Version 1.1."
-print "# http://scripts.sil.org/OFL"
-print "#"
-print "# This Font Software is Copyright (c) 1974-2014"
-print "# Center For Sutton Movement Writing, Inc."
-print "#"
-print "# The symbols of SignWriting 2010 were designed by Valerie Sutton (sutton@signwriting.org),"
-print "#\t inventor of the SignWriting Script"
-print "#"
-print "# The symbol images were refined by Adam Frost (frost@signwriting.org)."
-print "#"
-print "# The symbols were encoded, transformed, and refactored by Stephen E Slevinski Jr (slevin@signpuddle.net)."
-print "#"
-print "# Reserved Font Name: " + args.reserved
-print "#"
-print "# SignWriting 2010 Packed Data"
-print "# ------------------------------------"
-print "#\tinput directory: " + args.directory
-print "#\toutput data file: " + dataFile.replace(sourceDir,"")
-print "#\tprocessed: " + strftime("%Y-%m-%d %H:%M:%S", gmtime())
-print "# ------------------------------------"
-print "# https://github.com/slevinski/signwriting_2010_tools"
-print "#"
-print "# created with command:",
+print("# SignWriting 2010 is released under the SIL Open Font License, Version 1.1.")
+print("# http://scripts.sil.org/OFL")
+print("#")
+print("# This Font Software is Copyright (c) 1974-2014")
+print("# Center For Sutton Movement Writing, Inc.")
+print("#")
+print("# The symbols of SignWriting 2010 were designed by Valerie Sutton (sutton@signwriting.org),")
+print("#\t inventor of the SignWriting Script")
+print("#")
+print("# The symbol images were refined by Adam Frost (frost@signwriting.org).")
+print("#")
+print("# The symbols were encoded, transformed, and refactored by Stephen E Slevinski Jr (slevin@signpuddle.net).")
+print("#")
+print("# Reserved Font Name: " + args.reserved)
+print("#")
+print("# SignWriting 2010 Packed Data")
+print("# ------------------------------------")
+print("#\tinput directory: " + args.directory)
+print("#\toutput data file: " + dataFile.replace(sourceDir,""))
+print("#\tprocessed: " + strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+print("# ------------------------------------")
+print("# https://github.com/slevinski/signwriting_2010_tools")
+print("#")
+print("# created with command:",)
 for item in sys.argv:
 	if " " in item:
-		print '"' + item + '"',
+		print(f'"{item}"')
 	else:
-		print item,
-print
-print "#"
+		print(item)
+print()
+print("#")
 files = glob.glob(fontDir + "*" + ext)
 for file in files:
 	name = file.split('/')[-1].split('.')[0]
@@ -116,7 +116,7 @@ for file in files:
 		data = image_file.read()
 		if not ext=="svg":
 			encoded_string = base64.b64encode(data)
-			print name + "\t" + encoded_string
+			print(name + "\t" + encoded_string)
 		else:
 			#cleanup for various svg sources
 			data = data.replace("\n"," ")
@@ -124,7 +124,7 @@ for file in files:
 			end = data.index("</g>", start)+4
 			glines = data[start:end]
 			if args.precision != "NA":
-				glines = re.sub(r'\.[0-9]+', 
+				glines = re.sub(r'\.[0-9]+',
 				lambda m: (("%." + args.precision + "f") % float(m.group().strip()))[1:],
 				glines).replace("." + "0"*int(args.precision),"")
 			if args.simplify:
@@ -151,7 +151,7 @@ for file in files:
 				end = scale.index(")", start)
 				scaley =float(scale[start:end])/int(args.minimize)
 				glines=glines.replace(scale,"scale(" + str(scalex) + "," + str(scaley) + ")")
-				
-			print name + "\t" + glines
+
+			print(name + "\t" + glines)
 		if args.test:
 			sys.exit()

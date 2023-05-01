@@ -6,11 +6,7 @@
 
 import sys
 import os
-from time import gmtime, strftime
-import re
-import base64
 import argparse
-import glob
 
 ##################
 # Argument Setup
@@ -34,12 +30,12 @@ if not args.datafile:
 
 if os.path.exists(args.datafile) and not args.test:
 	if args.force:
-		print "Overwriting data file " + args.datafile
+		print("Overwriting data file " + args.datafile)
 	else:
-		print
-		print "FAILURE: Data file already exists: " + args.datafile
-		print "Move file or use -f to force the file creation"
-		print
+		print()
+		print("FAILURE: Data file already exists: " + args.datafile)
+		print("Move file or use -f to force the file creation")
+		print()
 		sys.exit(-1)
 
 lines = [line.strip() for line in open("symsize.txt")]
@@ -57,7 +53,7 @@ for line in lines:
 		parts = line.split("\t")
 		key = parts[0]
 		data = parts[1]
-		data = data.replace('"/> <path d="', ' ');
+		data = data.replace('"/> <path d="', ' ')
 		start = data.index("<g")
 		end = data.index(">", start)+1
 		dataG = data[start:end]
@@ -74,7 +70,7 @@ for line in lines:
 		parts = line.split("\t")
 		key = parts[0]
 		data = parts[1]
-		data = data.replace('"/> <path d="', ' ');
+		data = data.replace('"/> <path d="', ' ')
 		start = data.index("<g")
 		end = data.index(">", start)+1
 		dataG = data[start:end]
@@ -84,19 +80,18 @@ for line in lines:
 		dataP = dataP.replace('<path ', '<path class="sym-fill" fill="#ffffff" ')
 		svgF[key] = [dataG,dataP]
 		if svgL[key][0] != svgF[key][0]:
-		  print "g element different for key " + key
+		  print("g element different for key " + key)
 
 if args.test:
-	print "size: " + sizes['S10000'][0] + ',' + sizes['S10000'][1]
-	print "line g: " + svgL['S10000'][0];
-	print "line path: " + svgL['S10000'][1];
-	print "fill g: " + svgF['S10000'][0];
-	print "fill path: " + svgF['S10000'][1];
+	print("size: " + sizes['S10000'][0] + ',' + sizes['S10000'][1])
+	print("line g: " + svgL['S10000'][0])
+	print("line path: " + svgL['S10000'][1])
+	print("fill g: " + svgF['S10000'][0])
+	print("fill path: " + svgF['S10000'][1])
 	sys.exit()
 
 else:
 	sys.stdout = open(args.datafile,'w') #redirect all prints to this log file
 
 for key in svgL:
-	print key + '\t' + sizes[key][0] + '\t' + sizes[key][1] + '\t' + svgL[key][0] + svgF.get(key,['',''])[1] + svgL[key][1] + '</g>'
-	
+	print(key + '\t' + sizes[key][0] + '\t' + sizes[key][1] + '\t' + svgL[key][0] + svgF.get(key,['',''])[1] + svgL[key][1] + '</g>')

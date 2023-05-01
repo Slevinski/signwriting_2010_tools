@@ -5,21 +5,15 @@
 # License: MIT
 
 import sys
-import os
-from time import gmtime, strftime
-import re
-import base64
-import argparse
-import glob
 
 sys.stdout = open("symsize.js",'w') #redirect all prints to this log file
-print "var symSize = {"
+print("var symSize = {")
 
 lines = [line.strip() for line in open("symsize.txt")]
 for line in lines:
 	key = line[:6]
 	x = int(line[7:9])
 	y = int(line[11:13])
-	print key + ':"' + str(x) + 'x' + str(y) + '",'
+	print(f'{key}:"{str(x)}x{str(y)}",')
 
-print "}"
+print("}")

@@ -6,7 +6,6 @@
 
 import sys
 import os
-import math
 import argparse
 import time
 
@@ -31,9 +30,9 @@ args = parser.parse_args()
 def createDir(dir):
 	if not os.path.isdir(dir):
 		os.makedirs(dir)
-		print "creating directory '" + dir + "'"
+		print("creating directory '" + dir + "'")
 	else:
-		print "overwriting directory '" + dir + "'"
+		print("overwriting directory '" + dir + "'")
 
 ##################
 # # initializing
@@ -44,7 +43,7 @@ if args.output != "NA":
 	outfilename = "retrace_" + args.subfont + ".sh"
 	if args.output:
 		outfilename = args.output
-	print "writing to output file " + outfilename
+	print("writing to output file " + outfilename)
 	sys.stdout = open(outfilename,'w') #redirect all prints to this log file
 
 sourceDir = os.path.abspath("../source/") + "/"
@@ -61,7 +60,7 @@ else:
 	keylist = open("symkeys.txt", "r")
 for symkey in keylist:
 	symkey = symkey[:-1]
-	print args.inkscape + " " + sourceDir + args.dir + "/" + symkey + ".svg --export-png=" + sourceDir + "png_" + args.subfont + "/" + symkey + ".png -d 900"
-	print "pngtopnm " + sourceDir + "png_" + args.subfont + "/" + symkey + ".png > " + sourceDir + "pnm_" + args.subfont + "/" + symkey + ".pnm" 
-	print "mkbitmap " + sourceDir + "pnm_" + args.subfont + "/" + symkey + ".pnm -x -t 0.3 -o " + sourceDir + "pbm_" + args.subfont + "/" + symkey + ".pbm" 
-	print "potrace " + sourceDir + "pbm_" + args.subfont + "/" + symkey + ".pbm -s -o " + sourceDir + "svg_" + args.subfont + "/" + symkey + ".svg" 
+	print(args.inkscape + " " + sourceDir + args.dir + "/" + symkey + ".svg --export-png=" + sourceDir + "png_" + args.subfont + "/" + symkey + ".png -d 900")
+	print("pngtopnm " + sourceDir + "png_" + args.subfont + "/" + symkey + ".png > " + sourceDir + "pnm_" + args.subfont + "/" + symkey + ".pnm")
+	print("mkbitmap " + sourceDir + "pnm_" + args.subfont + "/" + symkey + ".pnm -x -t 0.3 -o " + sourceDir + "pbm_" + args.subfont + "/" + symkey + ".pbm")
+	print("potrace " + sourceDir + "pbm_" + args.subfont + "/" + symkey + ".pbm -s -o " + sourceDir + "svg_" + args.subfont + "/" + symkey + ".svg")

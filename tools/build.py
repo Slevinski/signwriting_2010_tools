@@ -1,4 +1,4 @@
-# build.py is a python script to create the Sutton SignWriting fonts 
+# build.py is a python script to create the Sutton SignWriting fonts
 #    by importing SVG glyphs and merging feature files.
 #
 # Copyright (c) 2014-2017 Stephen E Slevinski Jr <slevin@signpuddle.net>
@@ -17,10 +17,8 @@ import psMat
 import os
 import math
 import argparse
-from array import array
 import time
 from stat import * # ST_SIZE etc
-import glob
 
 __version__ = '2.2.0'
 
@@ -56,12 +54,11 @@ args = parser.parse_args()
 # function defs
 #################
 def unichar(uni):
-        code = int(uni,16)
-        try:
-                return unichr(code)
-        except ValueError:
-                return unichr( 0xd800 + ((code-0x10000)//0x400) ) \
-                        +unichr( 0xdc00 + ((code-0x10000)% 0x400) )
+	code = int(uni,16)
+	try:
+		return chr(code)
+	except ValueError:
+		return chr(0xd800 + ((code-0x10000)//0x400))+chr(0xdc00 + ((code-0x10000)% 0x400))
 
 def key2code(key,plane):
 	return (int(plane + '0000',16) + ((int(key[1:4],16) - 256) * 96) + ((int(key[4:5],16))*16) + int(key[5:6],16) + 1)
@@ -84,17 +81,16 @@ if args.subfont:
 
 fontTitle = args.title
 underTitle = fontTitle
-fontfilename ="../fonts/" + fontTitle + fontPostfix + ".ttf";
-logfilename ="../fonts/" + fontTitle + fontPostfix + ".log";
+fontfilename ="../fonts/" + fontTitle + fontPostfix + ".ttf"
+logfilename ="../fonts/" + fontTitle + fontPostfix + ".log"
 
 if args.silent:
 	if args.verbose:
-		print "devnull"
+		print("devnull")
 	f = open(os.devnull, 'w') #redirect all prints to this log file
 	sys.stdout = f
 else:
 	if args.log != "NA":
-		
 		#temp = sys.stdout #store original stdout object for later
 		if args.log:
 			logfilename = args.log
@@ -103,81 +99,81 @@ else:
 if args.verbose:
 	for item in sys.argv:
 		if " " in item:
-			print '"' + item + '"',
+			print(f'"{item}"')
 		else:
-			print item,
-	print
-	print
-	print "SignWriting 2010 Tools project"
-	print "-------------------------------"
-	print "\tversion " + __version__
-	print "-------------------------------"
-	print "https://github.com/slevinski/signwriting_2010_tools"
-	print 
-	print "verbosity turned on"
+			print(item)
+	print()
+	print()
+	print("SignWriting 2010 Tools project")
+	print("-------------------------------")
+	print("\tversion " + __version__)
+	print("-------------------------------")
+	print("https://github.com/slevinski/signwriting_2010_tools")
+	print()
+	print("verbosity turned on")
 	if args.mono:
-		print
-		print "mono sized"
-	print
-	print "using Unicode plane " + args.unicode
-	print
+		print()
+		print("mono sized")
+	print()
+	print("using Unicode plane " + args.unicode)
+	print()
 else:
-	print
-	print "Building font..."
+	print()
+	print("Building font...")
 
 # symbol key input file
 if os.path.exists(args.keys):
 	if args.verbose:
-		print "using symbol key file " + args.keys
+		print("using symbol key file " + args.keys)
 # if args.keys != "symkeys.txt":
-# 	args.quick = True;
+# 	args.quick = True
 
 if args.dir:
 	fontDir = sourceDir + args.dir + "/"
 	# check directory
 	if os.path.exists(fontDir):
 		if args.verbose:
-			print "using directory " + fontDir + " for import files"
+			print(f"using directory {fontDir} for import files")
 	else:
-		print "FAILURE: directory " + fontDir + " does not exist"
+		print(f"FAILURE: directory {fontDir} does not exist")
 		sys.exit(-1)
 elif args.subfont == "Null":
 	if args.verbose:
-		print "using null.svg for import"
+		print("using null.svg for import")
 else:
 	directories = os.walk( os.path.join(sourceDir,'.')).next()[1]
 	directories.remove('templates')
 	if not len(directories):
-		print ""
-		print "FAILURE: no directory of import files available in the directory " + sourceDir
+		print()
+		print("FAILURE: no directory of import files available in the directory " + sourceDir)
 	else:
-		print
-		print "FAILURE: use the -d arguement with one of the following options from the directory " + sourceDir
+		print()
+		print("FAILURE: use the -d arguement with one of the following options from the directory " + sourceDir)
 
 		for dir in directories:
-			print "-d " + dir
+			print("-d " + dir)
 
 	sys.exit(-1)
 
 if args.verbose:
-	print "using extension " + args.ext
+	print("using extension " + args.ext)
 
 if os.path.exists(fontfilename):
 	if args.force:
 		if args.verbose:
-			print
-			print "Overwriting font file " + fontfilename
+			print()
+			print("Overwriting font file " + fontfilename)
 	elif not args.preview:
-		print
-		print "FAILURE: File already exists: " + fontfilename
-		print "Move file or use -f to force the file creation"
-		print
+		print()
+		print("FAILURE: File already exists: " + fontfilename)
+		print("Move file or use -f to force the file creation")
+		print()
 		sys.exit(-1)
 
 
 if args.verbose:
-	print
-	print"Font initilization"
+	print()
+	print("Font initilization")
 font = fontforge.font()
 font.fontname = underTitle + underPostfix
 font.familyname = fontTitle + fontPostfix
@@ -187,14 +183,14 @@ font.fontlog = "August 2016 Update"
 font.version = args.ident
 
 if args.verbose:
-	print
-	print "Custom settings file: " + args.custom
+	print()
+	print("Custom settings file: " + args.custom)
 lines = [line.strip() for line in open(args.custom)]
 for line in lines:
 	if line[0] != "#":
 		parts = line.split('=')
 		if (args.verbose):
-			print "\tsetting: " + parts[0] + " as " + parts[1]
+			print(f"\tsetting: {parts[0]} as {parts[1]}")
 		if parts[1][0]=='"':
 			parts[1] = parts[1].replace('"','').replace('\\n','\n')
 			setattr(font,parts[0],parts[1])
@@ -210,7 +206,7 @@ for line in lines:
 #DisplaySize: -24
 #DisplayLayer: 1
 #font.antialias = 1
-#font.size_feature(16);
+#font.size_feature(16)
 
 
 char = font.createChar(0, ".notdef")
@@ -218,38 +214,37 @@ char = font.createChar(0, ".notdef")
 glfset = [line.strip() for line in open(args.glyph)]
 
 if args.verbose:
-	print
-	print "Glyph settings file: " + args.glyph
+	print()
+	print("Glyph settings file: " + args.glyph)
 	for line in glfset:
 		if line[0] != "#":
 			if "=" in line:
 				parts = line.split('=')
-				print "\tsetting: " + parts[0] + " as " + parts[1]
+				print(f"\tsetting: {parts[0]} as {parts[1]}")
 			else:
-				print "\tcalling: " + line
+				print("\tcalling: " + line)
 
 if args.beta or args.next:
 	args.size = "symsize.txt"
 	lines = [line.strip() for line in open(args.size)]
 	sizes = {}
 	for line in lines:
-	        key = line[:6]
-	        w = line[7:9]
-	        h = line[11:13]
-	        sizes[key] = [w,h]
+		key = line[:6]
+		w = line[7:9]
+		h = line[11:13]
+		sizes[key] = [w,h]
 
 	if args.verbose:
-		print
-		print "Glyph size file: " + args.size
-		
+		print()
+		print("Glyph size file: " + args.size)
 
-glfCnt=0;
-glfTtl=0;
+glfCnt=0
+glfTtl=0
 glfStart = time.time()
-print
-print "ISWA 2010 Glyphs"
+print()
+print("ISWA 2010 Glyphs")
 if args.verbose:
-	print "\tload file " + args.keys
+	print("\tload file " + args.keys)
 infile = open(args.keys, "r")
 missing = 0
 codepoint = -1
@@ -267,23 +262,22 @@ for symkey in infile:
 		if args.verbose:
 			glfCnt = glfCnt + 1
 			if glfCnt==60:
-				print glyph_name,
+				print(glyph_name)
 				sys.stdout.flush()
 				glfCnt=0
 		else:
 			glfCnt = glfCnt + 1
 			if glfCnt==1150:
-				print ".",
+				print(".")
 				sys.stdout.flush()
 				glfCnt=0
 
 
 		codepoint = key2code(glyph_name,plane)
-		
 		char = font.createChar(codepoint,glyph_name)
 
 		if args.subfont == "Null":
-			char.importOutlines(sourceDir + "other_svg/null.svg");
+			char.importOutlines(sourceDir + "other_svg/null.svg")
 		else:
 			filename = fontDir + glyph_name + "." + args.ext
 			if os.path.isfile(filename):
@@ -292,14 +286,14 @@ for symkey in infile:
 				missing += 1
 
 		#		glyph = char.background
-		#		glyph.removeOverlap();
+		#		glyph.removeOverlap()
 		#		char.activeLayer=0
-		#		char.clear();
-		#		char.background=glyph;
+		#		char.clear()
+		#		char.background=glyph
 
 		for line in glfset:
 			if line[0] != "#":
-				if "=" in line: 
+				if "=" in line:
 					parts = line.split('=')
 					if parts[1][0]=='"':
 						parts[1] = parts[1].replace('"','')
@@ -311,29 +305,29 @@ for symkey in infile:
 
 		if args.beta or args.next:
 			char.transform(psMat.translate(0,int(sizes[glyph_name][1])*5-135))
-			setattr(char,"width",int(sizes[glyph_name][0])*10+40);  # bearing 20 each side
+			setattr(char,"width",int(sizes[glyph_name][0])*10+40)  # bearing 20 each side
 
 
 
 		if args.verbose:
 			glfCnt = glfCnt + 1
 			if glfCnt==60:
-				print glyph_name,
+				print(glyph_name)
 				sys.stdout.flush()
 				glfCnt=0
 		else:
 			glfCnt = glfCnt + 1
 			if glfCnt==1150:
-				print ".",
+				print(".")
 				sys.stdout.flush()
 				glfCnt=0
 
 
-print "OK"
+print("OK")
 
 if missing == 37811:
-	print
-	print "FAILURE: no files with extension " + args.ext + " in directory " + fontDir
+	print()
+	print(f"FAILURE: no files with extension {args.ext} in directory {fontDir}")
 	sys.exit(-1)
 
 glfEnd = time.time()
@@ -345,111 +339,111 @@ if not args.quick:
 		chrStart = time.time()
 
 		#Unicode 8
-		uniCnt=0;
-		uniTtl=0;
-		print
-		print "Unicode 8 Characters"
+		uniCnt=0
+		uniTtl=0
+		print()
+		print("Unicode 8 Characters")
 		for codigo in range(0x1D800,0x1DAAF+1):
 			uniTtl = uniTtl + 1
 			char_name = "%x" % (codigo)
-			char_name = "u" + char_name.upper();
+			char_name = "u" + char_name.upper()
 			if args.verbose:
-				print char_name,
+				print(char_name)
 				sys.stdout.flush()
 			else:
 				uniCnt = uniCnt + 1
 				if uniCnt==20:
-					print ".",
+					print(".")
 					sys.stdout.flush()
 					uniCnt=0
 
-			char = font.createChar(codigo,char_name);
-			char.importOutlines(sourceDir + "other_svg/placeholder.svg");
-		print "OK"
+			char = font.createChar(codigo,char_name)
+			char.importOutlines(sourceDir + "other_svg/placeholder.svg")
+		print("OK")
 
 		chrEnd = time.time()
-	
 		feaStart = time.time()
-		print
-		print "Merging Unicode 8 Features",
+
+		print()
+		print("Merging Unicode 8 Features")
 		sys.stdout.flush()
 		if args.subfont == "1d":
-			font.mergeFeature(sourceDir + "signwriting_2010_unicode1D.fea");
-			font.mergeFeature(sourceDir + "signwriting_2010_unicode1Dliga.fea");
+			font.mergeFeature(sourceDir + "signwriting_2010_unicode1D.fea")
+			font.mergeFeature(sourceDir + "signwriting_2010_unicode1Dliga.fea")
 		else:
-			font.mergeFeature(sourceDir + "signwriting_2010_unicode8.fea");
-		print "OK"
+			font.mergeFeature(sourceDir + "signwriting_2010_unicode8.fea")
+		print("OK")
 		feaEnd = time.time()
 
-	transY = -25;
+	transY = -25
 	if args.beta:
 		chrStart = time.time()
 
 		#beta design overwrites Unicode 8
-		uniCnt=0;
-		uniTtl=0;
-		print
-		print "Beta design overwrites Unicode 8 Characters"
-		print "\tstructural markers: ABLMR"
+		uniCnt=0
+		uniTtl=0
+		print()
+		print("Beta design overwrites Unicode 8 Characters")
+		print("\tstructural markers: ABLMR")
 		codigo = 0x1D800
-		char = font.createChar(codigo,"SW A");
-		char.importOutlines(sourceDir + "other_svg/swA.svg");
+		char = font.createChar(codigo,"SW A")
+		char.importOutlines(sourceDir + "other_svg/swA.svg")
 		char.transform(psMat.translate(0,transY))
-		setattr(char,"left_side_bearing",20);
-		setattr(char,"right_side_bearing",20);
+		setattr(char,"left_side_bearing",20)
+		setattr(char,"right_side_bearing",20)
 
 		codigo = 0x1D801
-		char = font.createChar(codigo,"SW B");
-		char.importOutlines(sourceDir + "other_svg/swB.svg");
+		char = font.createChar(codigo,"SW B")
+		char.importOutlines(sourceDir + "other_svg/swB.svg")
 		char.transform(psMat.translate(0,transY))
-		setattr(char,"left_side_bearing",20);
-		setattr(char,"right_side_bearing",20);
+		setattr(char,"left_side_bearing",20)
+		setattr(char,"right_side_bearing",20)
 
 		codigo = 0x1D802
-		char = font.createChar(codigo,"SW L");
-		char.importOutlines(sourceDir + "other_svg/swL.svg");
+		char = font.createChar(codigo,"SW L")
+		char.importOutlines(sourceDir + "other_svg/swL.svg")
 		char.transform(psMat.translate(0,transY))
-		setattr(char,"left_side_bearing",20);
-		setattr(char,"right_side_bearing",20);
+		setattr(char,"left_side_bearing",20)
+		setattr(char,"right_side_bearing",20)
 
 		codigo = 0x1D803
-		char = font.createChar(codigo,"SW M");
-		char.importOutlines(sourceDir + "other_svg/swM.svg");
+		char = font.createChar(codigo,"SW M")
+		char.importOutlines(sourceDir + "other_svg/swM.svg")
 		char.transform(psMat.translate(0,transY))
-		setattr(char,"left_side_bearing",20);
-		setattr(char,"right_side_bearing",20);
+		setattr(char,"left_side_bearing",20)
+		setattr(char,"right_side_bearing",20)
 
 		codigo = 0x1D804
-		char = font.createChar(codigo,"SW R");
-		char.importOutlines(sourceDir + "other_svg/swR.svg");
+		char = font.createChar(codigo,"SW R")
+		char.importOutlines(sourceDir + "other_svg/swR.svg")
 		char.transform(psMat.translate(0,transY))
-		setattr(char,"left_side_bearing",20);
-		setattr(char,"right_side_bearing",20);
+		setattr(char,"left_side_bearing",20)
+		setattr(char,"right_side_bearing",20)
 
-		print "OK"
-		print "\tnumbers: 250-749"
+		print("OK")
+		print("\tnumbers: 250-749")
 		for codigo in range(0x1D80C,0x1D9FF+1):
 			uniTtl = uniTtl + 1
 			char_name = "%x" % (codigo)
-			char_name = "u" + char_name.upper();
-			glyph_num = str(249 + uniTtl);
+			char_name = "u" + char_name.upper()
+			glyph_num = str(249 + uniTtl)
 			if args.verbose:
-				print char_name,
+				print(char_name)
 				sys.stdout.flush()
 			else:
 				uniCnt = uniCnt + 1
 				if uniCnt==20:
-					print ".",
+					print(".")
 					sys.stdout.flush()
 					uniCnt=0
 
-			char = font.createChar(codigo,"SW " + glyph_num);
-			char.importOutlines(sourceDir + "other_svg/sw" + glyph_num + ".svg");
+			char = font.createChar(codigo,"SW " + glyph_num)
+			char.importOutlines(f"{sourceDir}other_svg/sw{glyph_num}.svg")
 			char.transform(psMat.translate(0,transY))
-			setattr(char,"width",75);
-			setattr(char,"left_side_bearing",10);
-			setattr(char,"right_side_bearing",10);
-		print "OK"
+			setattr(char,"width",75)
+			setattr(char,"left_side_bearing",10)
+			setattr(char,"right_side_bearing",10)
+		print("OK")
 
 		chrEnd = time.time()
 
@@ -457,115 +451,115 @@ if not args.quick:
 		chrStart = time.time()
 
 		# 8 Unicode plus 17 characters
-		uniCnt=0;
-		uniTtl=0;
-		print
-		print "8 Unicode plus 17 characters"
-		print "\tstructural markers: ABLMR"
+		uniCnt=0
+		uniTtl=0
+		print()
+		print("8 Unicode plus 17 characters")
+		print("\tstructural markers: ABLMR")
 		codigo = 0x1DABA
-		char = font.createChar(codigo,"SW A");
-		char.importOutlines(sourceDir + "other_svg/swA.svg");
+		char = font.createChar(codigo,"SW A")
+		char.importOutlines(sourceDir + "other_svg/swA.svg")
 		char.transform(psMat.translate(0,transY))
-		setattr(char,"left_side_bearing",20);
-		setattr(char,"right_side_bearing",20);
+		setattr(char,"left_side_bearing",20)
+		setattr(char,"right_side_bearing",20)
 
 		codigo = 0x1DABB
-		char = font.createChar(codigo,"SW B");
-		char.importOutlines(sourceDir + "other_svg/swB.svg");
+		char = font.createChar(codigo,"SW B")
+		char.importOutlines(sourceDir + "other_svg/swB.svg")
 		char.transform(psMat.translate(0,transY))
-		setattr(char,"left_side_bearing",20);
-		setattr(char,"right_side_bearing",20);
+		setattr(char,"left_side_bearing",20)
+		setattr(char,"right_side_bearing",20)
 
 		codigo = 0x1DABC
-		char = font.createChar(codigo,"SW L");
-		char.importOutlines(sourceDir + "other_svg/swL.svg");
+		char = font.createChar(codigo,"SW L")
+		char.importOutlines(sourceDir + "other_svg/swL.svg")
 		char.transform(psMat.translate(0,transY))
-		setattr(char,"left_side_bearing",20);
-		setattr(char,"right_side_bearing",20);
+		setattr(char,"left_side_bearing",20)
+		setattr(char,"right_side_bearing",20)
 
 		codigo = 0x1DABD
-		char = font.createChar(codigo,"SW M");
-		char.importOutlines(sourceDir + "other_svg/swM.svg");
+		char = font.createChar(codigo,"SW M")
+		char.importOutlines(sourceDir + "other_svg/swM.svg")
 		char.transform(psMat.translate(0,transY))
-		setattr(char,"left_side_bearing",20);
-		setattr(char,"right_side_bearing",20);
+		setattr(char,"left_side_bearing",20)
+		setattr(char,"right_side_bearing",20)
 
 		codigo = 0x1DABE
-		char = font.createChar(codigo,"SW R");
-		char.importOutlines(sourceDir + "other_svg/swR.svg");
+		char = font.createChar(codigo,"SW R")
+		char.importOutlines(sourceDir + "other_svg/swR.svg")
 		char.transform(psMat.translate(0,transY))
-		setattr(char,"left_side_bearing",20);
-		setattr(char,"right_side_bearing",20);
+		setattr(char,"left_side_bearing",20)
+		setattr(char,"right_side_bearing",20)
 
-		print "OK"
-		print "\tnumbers: 0-9"
+		print("OK")
+		print("\tnumbers: 0-9")
 		for codigo in range(0x1DAB0,0x1DAB9+1):
 			char_name = "%x" % (codigo)
-			char_name = "u" + char_name.upper();
-			glyph_num = str(uniTtl);
+			char_name = "u" + char_name.upper()
+			glyph_num = str(uniTtl)
 			uniTtl = uniTtl + 1
 			if args.verbose:
-				print char_name,
+				print(char_name)
 				sys.stdout.flush()
 
-			char = font.createChar(codigo,"SW " + glyph_num);
-			char.importOutlines(sourceDir + "other_svg/sw" + glyph_num + ".svg");
+			char = font.createChar(codigo,"SW " + glyph_num)
+			char.importOutlines(f"{sourceDir}other_svg/sw{glyph_num}.svg")
 			char.transform(psMat.translate(0,transY))
-			setattr(char,"width",150);
-			setattr(char,"left_side_bearing",10);
-			setattr(char,"right_side_bearing",10);
-		print "OK"
+			setattr(char,"width",150)
+			setattr(char,"left_side_bearing",10)
+			setattr(char,"right_side_bearing",10)
+		print("OK")
 
 		chrEnd = time.time()
 
 
 if args.preview:
-	print
-	print "Skipping Font File Generation"
+	print()
+	print("Skipping Font File Generation")
 else:
 	genStart = time.time()
-	print
-	print "Generating Font File..."
-	font.generate(fontfilename);
-	print
-	print "OK"
+	print()
+	print("Generating Font File...")
+	font.generate(fontfilename)
+	print()
+	print("OK")
 	genEnd = time.time()
 
 if args.verbose:
 	end = time.time()
 	elapsed = end - start
-	print
-	print "Elapsed time of ", '%.1f'%(elapsed), "seconds."
+	print()
+	print("Elapsed time of ", '%.1f'%(elapsed), "seconds.")
 	if not args.quick:
-		print "\t" + '%.1f'%(glfEnd-glfStart), "seconds to create " + str(glfTtl) + " glyphs",
+		print("\t" + '%.1f'%(glfEnd-glfStart), "seconds to create " + str(glfTtl) + " glyphs",)
 		if missing:
-			print "minus " + str(missing) + " glyphs not imported"
+			print("minus " + str(missing) + " glyphs not imported")
 		else:
-			print
+			print()
 
 		if args.fea:
-			print "\t" + '%.1f'%(chrEnd-chrStart), "seconds to create " + str(uniTtl) + " characters" 
-			print "\t\t" + str(uniTtl) + " Unicode 8 characters"
-			print "\t" + '%.1f'%(feaEnd-feaStart), "seconds to merge features" 
-		print "\t" + '%.1f'%(genEnd-genStart), "seconds to generate font file" 
+			print("\t" + '%.1f'%(chrEnd-chrStart), "seconds to create " + str(uniTtl) + " characters" )
+			print("\t\t" + str(uniTtl) + " Unicode 8 characters")
+			print("\t" + '%.1f'%(feaEnd-feaStart), "seconds to merge features" )
+		print("\t" + '%.1f'%(genEnd-genStart), "seconds to generate font file" )
 
 if not args.preview:
 	#file details
-	print
-	print "Wrote font file " + fontfilename
+	print()
+	print("Wrote font file " + fontfilename)
 	if args.verbose:
 		try:
 	   		st = os.stat(fontfilename)
 		except IOError:
-			print "\tfailed to get information about", fontfilename
+			print("\tfailed to get information about", fontfilename)
 		else:
-			print "\tfile created: " ,time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st[ST_CTIME]))
+			print("\tfile created: " ,time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st[ST_CTIME])))
 
 			bytes = st[ST_SIZE]
 			log = math.floor(math.log(bytes, 1024))
-			print "\tfile size: %.*f %s" % (
-			2,
-			bytes / math.pow(1024, log),
-			['bytes', 'KB', 'MB']
-			[int(log)]
-			)
+			print("\tfile size: %.*f %s" % (
+				2,
+				bytes // math.pow(1024, log),
+				['bytes', 'KB', 'MB']
+				[int(log)]
+			))

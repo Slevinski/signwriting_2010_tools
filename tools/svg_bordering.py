@@ -10,12 +10,7 @@
 # >  python unpack.py svg_line.dat -i -a adj_a.txt -b adj_b.txt
 
 import sys
-import os
-from time import gmtime, strftime
-import re
-import base64
 import argparse
-import glob
 
 ##################
 # Argument Setup
@@ -32,18 +27,18 @@ args = parser.parse_args()
 # # initializing
 ##################
 dataFile = "svg_bordering.html"
-restore = sys.stdout;
+restore = sys.stdout
 sys.stdout = open(dataFile,'w') #redirect all prints to this log file
 
-print '<!DOCTYPE html>';
-print '<html>';
-print '<head>';
-print '    <title>SignWriting 2010 SVG Bounding Boxes</title>';
-print '    <meta charset="utf-8">';
-print '    <script src="svg_bordering.js"></script>'
-print '</head>';
-print '<body>';
-print '<div id="output"></div>';
+print('<!DOCTYPE html>')
+print('<html>')
+print('<head>')
+print('    <title>SignWriting 2010 SVG Bounding Boxes</title>')
+print('    <meta charset="utf-8">')
+print('    <script src="svg_bordering.js"></script>')
+print('</head>')
+print('<body>')
+print('<div id="output"></div>')
 
 
 top = 'S2ff00 S2ff01 S2ff02 S2ff03 S2ff20 S2ff31 S2ff33'
@@ -69,15 +64,15 @@ for line in lines:
 #		if key in top:
 #		if key in left:
 			other += 1
-			print "<h2>" + key + "</h2>";
-			print "<p>" + str(xMin).rstrip('0').rstrip('.') + ', ' + str(yMin).rstrip('0').rstrip('.')
-			print '<p><canvas id="' + key + '" width="' + str(150 + xMax) + '" height="' + str(150 + yMax) + '"></canvas>'
-			fnCalls += 'drawGrid("' + key + '");\n';
+			print("<h2>" + key + "</h2>")
+			print("<p>" + str(xMin).rstrip('0').rstrip('.') + ', ' + str(yMin).rstrip('0').rstrip('.'))
+			print('<p><canvas id="' + key + '" width="' + str(150 + xMax) + '" height="' + str(150 + yMax) + '"></canvas>')
+			fnCalls += 'drawGrid("' + key + '");\n'
 
-print '<script>'
-print fnCalls;
-print '</script>'
-print '</body></html>'
+print('<script>')
+print(fnCalls)
+print('</script>')
+print('</body></html>')
 
 sys.stdout = restore
-print 'Output ' + str(other) + " signs for inspection"
+print(f'Output {str(other)} signs for inspection')
